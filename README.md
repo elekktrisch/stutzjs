@@ -11,12 +11,12 @@ Import the stutz script by adding a script tag in the html header:
 ## format values
 ```js
 var stutz = new Stutz("CHF", "123456.789");
-console.log(stutz.formatMoney()); // "CHF 123"456.79" 
+console.log(stutz.formatMoney()); // "CHF 123'456.79" 
 ```
 
 ## parse formatted values
 ```js
-var stutz = Stutz.from("CHF 123"456.79");
+var stutz = Stutz.from("CHF 123'456.79");
 console.log(stutz.getAmount().toFixed(3)); // "123456.790" 
 console.log(stutz.getCurrencyCode()); // "CHF" 
 ```
