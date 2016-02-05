@@ -15,18 +15,17 @@ function addDigitGrouping(amountValue: string, groupDelimiter: string) {
   return amountValue.replace(/(\d)(?=(\d{3})+\.)/g, '$1' + groupDelimiter);
 }
 
-export let DEFAULT_DECIMAL_DELIMITER: string = ".";
-export let DEFAULT_GROUP_DELIMITER: string = "'";
-export let DEFAULT_DECIMALS: number = 2;
-export let DEFAULT_CURRENCIES: {[currencyCode:string]:number} = {"CHF": 2, "USD": 2};
-export let DEFAULT_FORMATTER = (currencies, groupDelimiter, decimalDelimiter) => {
+let DEFAULT_DECIMAL_DELIMITER: string = ".";
+let DEFAULT_GROUP_DELIMITER: string = "'";
+let DEFAULT_DECIMALS: number = 2;
+let DEFAULT_CURRENCIES: {[currencyCode:string]:number} = {"CHF": 2, "USD": 2};
+let DEFAULT_FORMATTER = (currencies, groupDelimiter, decimalDelimiter) => {
   return (amount: BigJsLibrary.BigJS, currencyCode: string) => {
     let decimals = currencies && currencies[currencyCode];
     let amountValue = amount.toFixed(decimals || DEFAULT_DECIMALS);
     return currencyCode + " " + addDigitGrouping(amountValue, groupDelimiter).replace(".", decimalDelimiter);
   }
 };
-
 
 export default class Stutz {
 
