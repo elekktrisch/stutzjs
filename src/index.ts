@@ -61,4 +61,17 @@ export default class Stutz {
     return this.config.formatter(this.amount, this.currencyCode);
   }
 
+  static from(formattedMoney: string, config?: StutzConfig): Stutz {
+    let groupDelimiter: string = config && config.groupDelimiter || DEFAULT_GROUP_DELIMITER;
+    let decimalDelimiter: string = config && config.decimalDelimiter || DEFAULT_DECIMAL_DELIMITER;
+
+    let amountValue: string = formattedMoney.replace(new RegExp("[^\\d" + decimalDelimiter + "]", "g"), '');
+    if(decimalDelimiter !== DEFAULT_DECIMAL_DELIMITER) {
+      amountValue = amountValue.replace(decimalDelimiter, DEFAULT_DECIMAL_DELIMITER);
+    }
+    let currencyCode: string = formattedMoney.replace(new RegExp("[\\d,'.\\s" + decimalDelimiter + groupDelimiter + "]", "g"), '');
+
+    return new Stutz(currencyCode, amountValue);
+  }
+
 }

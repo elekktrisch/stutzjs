@@ -22,7 +22,7 @@ describe('Stutz', () => {
     let stutz: Stutz = new Stutz("CHF", "100.2000");
 
     // act
-    var currencyCode = stutz.getCurrencyCode();
+    let currencyCode = stutz.getCurrencyCode();
 
     // assert
     expect(currencyCode).toBe("CHF");
@@ -34,7 +34,7 @@ describe('Stutz', () => {
     let stutz: Stutz = new Stutz("CHF", "100.2000");
 
     // act
-    var formattedMoney = stutz.formatMoney();
+    let formattedMoney = stutz.formatMoney();
 
     // assert
     expect(formattedMoney).toEqual("CHF 100.20");
@@ -52,7 +52,7 @@ describe('Stutz', () => {
     let stutz: Stutz = new Stutz("CHF", "123.456789", config);
 
     // act
-    var formattedMoney = stutz.formatMoney();
+    let formattedMoney = stutz.formatMoney();
 
     // assert
     expect(formattedMoney).toEqual("123.457 extremely customized format CHF");
@@ -69,8 +69,8 @@ describe('Stutz', () => {
     let yStutz: Stutz = new Stutz("YYY", "123.456789123", config);
 
     // act
-    var zFormattedMoney = zStutz.formatMoney();
-    var yFormattedMoney = yStutz.formatMoney();
+    let zFormattedMoney = zStutz.formatMoney();
+    let yFormattedMoney = yStutz.formatMoney();
 
     // assert
     expect(zFormattedMoney).toEqual("ZZZ 123.45679");
@@ -83,7 +83,7 @@ describe('Stutz', () => {
     let stutz: Stutz = new Stutz("CHF", "-100.2000");
 
     // act
-    var formattedMoney = stutz.formatMoney();
+    let formattedMoney = stutz.formatMoney();
 
     // assert
     expect(formattedMoney).toEqual("CHF -100.20");
@@ -95,7 +95,7 @@ describe('Stutz', () => {
     let stutz: Stutz = new Stutz("CHF", "1234654987.123");
 
     // act
-    var formattedMoney = stutz.formatMoney();
+    let formattedMoney = stutz.formatMoney();
 
     // assert
     expect(formattedMoney).toEqual("CHF 1'234'654'987.12");
@@ -110,7 +110,7 @@ describe('Stutz', () => {
     let stutz: Stutz = new Stutz("CHF", "1234654987.123", config);
 
     // act
-    var formattedMoney = stutz.formatMoney();
+    let formattedMoney = stutz.formatMoney();
 
     // assert
     expect(formattedMoney).toEqual("CHF 1,234,654,987.12");
@@ -125,10 +125,41 @@ describe('Stutz', () => {
     let stutz: Stutz = new Stutz("CHF", "12345.678", config);
 
     // act
-    var formattedMoney = stutz.formatMoney();
+    let formattedMoney = stutz.formatMoney();
 
     // assert
     expect(formattedMoney).toEqual("CHF 12'345,68");
+  });
+
+
+  it('should parse an amount value correctly', () => {
+    // arrange
+    let stutz: Stutz = Stutz.from("CHF 12'345.68");
+
+    // act
+    let amountValue = stutz.getAmount();
+    let currencyCode = stutz.getCurrencyCode();
+
+    // assert
+    expect(amountValue.toFixed(2)).toEqual("12345.68");
+    expect(currencyCode).toEqual("CHF");
+  });
+
+
+  it('should parse an amount value with custom decimal delimiter correctly', () => {
+    // arrange
+    let config: any = {
+      decimalDelimiter: ","
+    };
+    let stutz: Stutz = Stutz.from("CHF 12'345,68", config);
+
+    // act
+    let amountValue = stutz.getAmount();
+    let currencyCode = stutz.getCurrencyCode();
+
+    // assert
+    expect(amountValue.toFixed(2)).toEqual("12345.68");
+    expect(currencyCode).toEqual("CHF");
   });
 
 });

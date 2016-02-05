@@ -90,5 +90,28 @@ describe('Stutz', function () {
         // assert
         expect(formattedMoney).toEqual("CHF 12'345,68");
     });
+    it('should parse an amount value correctly', function () {
+        // arrange
+        var stutz = index_1.default.from("CHF 12'345.68");
+        // act
+        var amountValue = stutz.getAmount();
+        var currencyCode = stutz.getCurrencyCode();
+        // assert
+        expect(amountValue.toFixed(2)).toEqual("12345.68");
+        expect(currencyCode).toEqual("CHF");
+    });
+    it('should parse an amount value with custom decimal delimiter correctly', function () {
+        // arrange
+        var config = {
+            decimalDelimiter: ","
+        };
+        var stutz = index_1.default.from("CHF 12'345,68", config);
+        // act
+        var amountValue = stutz.getAmount();
+        var currencyCode = stutz.getCurrencyCode();
+        // assert
+        expect(amountValue.toFixed(2)).toEqual("12345.68");
+        expect(currencyCode).toEqual("CHF");
+    });
 });
 //# sourceMappingURL=index.spec.js.map

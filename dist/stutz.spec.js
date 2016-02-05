@@ -44,6 +44,16 @@ var Stutz = (function () {
     Stutz.prototype.formatMoney = function () {
         return this.config.formatter(this.amount, this.currencyCode);
     };
+    Stutz.from = function (formattedMoney, config) {
+        var groupDelimiter = config && config.groupDelimiter || DEFAULT_GROUP_DELIMITER;
+        var decimalDelimiter = config && config.decimalDelimiter || DEFAULT_DECIMAL_DELIMITER;
+        var amountValue = formattedMoney.replace(new RegExp("[^\\d" + decimalDelimiter + "]", "g"), '');
+        if (decimalDelimiter !== DEFAULT_DECIMAL_DELIMITER) {
+            amountValue = amountValue.replace(decimalDelimiter, DEFAULT_DECIMAL_DELIMITER);
+        }
+        var currencyCode = formattedMoney.replace(new RegExp("[\\d,'.\\s" + decimalDelimiter + groupDelimiter + "]", "g"), '');
+        return new Stutz(currencyCode, amountValue);
+    };
     return Stutz;
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -141,6 +151,29 @@ describe('Stutz', function () {
         var formattedMoney = stutz.formatMoney();
         // assert
         expect(formattedMoney).toEqual("CHF 12'345,68");
+    });
+    it('should parse an amount value correctly', function () {
+        // arrange
+        var stutz = index_1.default.from("CHF 12'345.68");
+        // act
+        var amountValue = stutz.getAmount();
+        var currencyCode = stutz.getCurrencyCode();
+        // assert
+        expect(amountValue.toFixed(2)).toEqual("12345.68");
+        expect(currencyCode).toEqual("CHF");
+    });
+    it('should parse an amount value with custom decimal delimitter correctly', function () {
+        // arrange
+        var config = {
+            decimalDelimiter: ","
+        };
+        var stutz = index_1.default.from("CHF 12'345,68", config);
+        // act
+        var amountValue = stutz.getAmount();
+        var currencyCode = stutz.getCurrencyCode();
+        // assert
+        expect(amountValue.toFixed(2)).toEqual("12345.68");
+        expect(currencyCode).toEqual("CHF");
     });
 });
 

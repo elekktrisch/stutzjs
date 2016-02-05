@@ -43,6 +43,16 @@ var Stutz = (function () {
     Stutz.prototype.formatMoney = function () {
         return this.config.formatter(this.amount, this.currencyCode);
     };
+    Stutz.from = function (formattedMoney, config) {
+        var groupDelimiter = config && config.groupDelimiter || DEFAULT_GROUP_DELIMITER;
+        var decimalDelimiter = config && config.decimalDelimiter || DEFAULT_DECIMAL_DELIMITER;
+        var amountValue = formattedMoney.replace(new RegExp("[^\\d" + decimalDelimiter + "]", "g"), '');
+        if (decimalDelimiter !== DEFAULT_DECIMAL_DELIMITER) {
+            amountValue = amountValue.replace(decimalDelimiter, DEFAULT_DECIMAL_DELIMITER);
+        }
+        var currencyCode = formattedMoney.replace(new RegExp("[\\d,'.\\s" + decimalDelimiter + groupDelimiter + "]", "g"), '');
+        return new Stutz(currencyCode, amountValue);
+    };
     return Stutz;
 })();
 Object.defineProperty(exports, "__esModule", { value: true });

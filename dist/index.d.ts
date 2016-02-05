@@ -17,4 +17,5 @@ export default class Stutz {
     getAmount(): BigJsLibrary.BigJS;
     getCurrencyCode(): string;
     formatMoney(): string;
+    static from(formattedMoney: string, config?: StutzConfig): Stutz;
 }
