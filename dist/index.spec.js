@@ -113,5 +113,15 @@ describe('Stutz', function () {
         expect(amountValue.toFixed(2)).toEqual("12345.68");
         expect(currencyCode).toEqual("CHF");
     });
+    it('should parse an amount value with custom decimal delimiter and custom group delimiter correctly', function () {
+        // arrange
+        var config = {
+            groupDelimiter: ".",
+            decimalDelimiter: ","
+        };
+        var stutz = index_1.default.from("USD 123.456,79", config);
+        // assert
+        expect(stutz.getAmount().toFixed(2)).toEqual("123456.79");
+    });
 });
 //# sourceMappingURL=index.spec.js.map

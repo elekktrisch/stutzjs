@@ -162,4 +162,17 @@ describe('Stutz', () => {
     expect(currencyCode).toEqual("CHF");
   });
 
+
+  it('should parse an amount value with custom decimal delimiter and custom group delimiter correctly', () => {
+    // arrange
+    let config: any = {
+      groupDelimiter: ".",
+      decimalDelimiter: ","
+    };
+    let stutz = Stutz.from("USD 123.456,79", config);
+
+    // assert
+    expect(stutz.getAmount().toFixed(2)).toEqual("123456.79");
+  });
+
 });
