@@ -23,12 +23,14 @@ console.log(stutz.getCurrencyCode()); // "CHF"
 
 ## customize
 ```js
+var currencies: {"USD": 2, "JOD": 3}  // number of decimals per currency 
 var config = {
-  currencies: {"USD": 2, "JOD": 3}, // number of decimals per currency
+  currencies: currencies,
   groupDelimiter: "'",
   decimalDelimiter: ".",
   formatter: function(amount, currencyCode) {
-    return currencyCode + " " + amount.toFixed(2);
+    var decimalPlaces = currencies[currencyCode] || 2;
+    return currencyCode + " " + amount.toFixed(decimalPlaces);
   }
 }
 ```
