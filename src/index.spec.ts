@@ -89,4 +89,46 @@ describe('Stutz', () => {
     expect(formattedMoney).toEqual("CHF -100.20");
   });
 
+
+  it('should format values with digits grouping for large amounts', () => {
+    // arrange
+    let stutz: Stutz = new Stutz("CHF", "1234654987.123");
+
+    // act
+    var formattedMoney = stutz.formatMoney();
+
+    // assert
+    expect(formattedMoney).toEqual("CHF 1'234'654'987.12");
+  });
+
+
+  it('should allow for custom group delimiter', () => {
+    // arrange
+    let config: any = {
+      groupDelimiter: ","
+    };
+    let stutz: Stutz = new Stutz("CHF", "1234654987.123", config);
+
+    // act
+    var formattedMoney = stutz.formatMoney();
+
+    // assert
+    expect(formattedMoney).toEqual("CHF 1,234,654,987.12");
+  });
+
+
+  it('should allow for custom decimal delimiter', () => {
+    // arrange
+    let config: any = {
+      decimalDelimiter: ","
+    };
+    let stutz: Stutz = new Stutz("CHF", "12345.678", config);
+
+    // act
+    var formattedMoney = stutz.formatMoney();
+
+    // assert
+    expect(formattedMoney).toEqual("CHF 12'345,68");
+  });
+
 });
