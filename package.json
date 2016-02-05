@@ -1,0 +1,30 @@
+{
+  "name": "stutzjs",
+  "version": "0.0.1",
+  "description": "Formats currency values",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elekktrisch/stutzjs.git"
+  },
+  "keywords": [
+    "currency",
+    "formatting",
+    "bigdecimal"
+  ],
+  "author": "Roman Schlegel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/elekktrisch/stutzjs/issues"
+  },
+  "homepage": "https://github.com/elekktrisch/stutzjs#readme",
+  "dependencies": {
+    "big.js": "^3.1.3"
+  },
+  "devDependencies": {
+    "webpack": "^1.12.13"
+  }
+}
