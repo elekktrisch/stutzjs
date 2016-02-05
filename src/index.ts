@@ -1,25 +1,52 @@
 import * as Big from "big.js";
 
+export interface CurrencyFormatter {
+  (amount: BigJsLibrary.BigJS, currencyCode: string);
+}
+
+export class StutzConfig {
+  currencies: {[currencyCode:string]:number};
+  formatter: CurrencyFormatter;
+}
+
+export let DEFAULT_DECIMALS: number = 2;
+export let DEFAULT_CURRENCIES: {[currencyCode:string]:number} = {"CHF": 2, "USD": 2};
+export let DEFAULT_FORMATTER = (currencies) => {
+  return (amount: BigJsLibrary.BigJS, currencyCode: string) => {
+    var decimals = currencies && currencies[currencyCode];
+    return currencyCode + " " + amount.toFixed(decimals || DEFAULT_DECIMALS);
+  }
+};
+
+
 export default class Stutz {
 
-    private amount: BigJsLibrary.BigJS;
-    private currencyCode: string;
+  private amount: BigJsLibrary.BigJS;
+  private currencyCode: string;
+  private config: StutzConfig;
 
-    constructor(currencyCode: string, value: string) {
-        this.currencyCode = currencyCode;
-        this.amount = new Big(value);
-    }
+  constructor(currencyCode: string, value: string, config?: StutzConfig) {
+    this.currencyCode = currencyCode;
+    this.amount = new Big(value);
 
-    getAmount(): BigJsLibrary.BigJS {
-        return this.amount;
-    }
-    
-    getCurrencyCode(): string {
-        return this.currencyCode;
-    }
+    let currencies = config && config.currencies || DEFAULT_CURRENCIES;
+    let formatter = config && config.formatter || DEFAULT_FORMATTER(currencies);
+    this.config = {
+      currencies: currencies,
+      formatter: formatter
+    };
+  }
 
-    formatMoney(decimals: number = 2): string {
-        return this.currencyCode + " " + this.amount.toFixed(decimals);
-    }
+  getAmount(): BigJsLibrary.BigJS {
+    return this.amount;
+  }
+
+  getCurrencyCode(): string {
+    return this.currencyCode;
+  }
+
+  formatMoney(): string {
+    return this.config.formatter(this.amount, this.currencyCode);
+  }
 
 }

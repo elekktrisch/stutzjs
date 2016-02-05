@@ -10,7 +10,6 @@ module.exports = function(config) {
         ],
         preprocessors: {},
         reporters: ['dots'],
-        port: 9876,
         colors: true,
         logLevel: config.LOG_INFO,
         autoWatch: true,
