@@ -34,17 +34,21 @@ var config = {
   }
 }
 ```
-### Customization Example 1
+### Customization Example 1  
+```js
 var config = {     
   groupDelimiter: ".",
   decimalDelimiter: ","
 };
 var stutz = Stutz.from("USD 123.456,79");
-console.log(stutz.getAmount().toFixed(2)); // "123456.79"
+console.log(stutz.getAmount().toFixed(2)); // "123456.79" 
+```
 
-### Customization Example 2
+### Customization Example 2  
+```js
 var config = {     
   currencies: {"ZZZ": 5, "USD": 2}
 };
 var stutz = new Stutz("123456.78", "ZZZ", config);
-console.log(stutz.formatMoney()); // "ZZZ 123'456.79000"
+console.log(stutz.formatMoney()); // "ZZZ 123'456.79000"    
+```
