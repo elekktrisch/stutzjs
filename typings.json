@@ -1,0 +1,7 @@
+{
+  "dependencies": {},
+  "devDependencies": {},
+  "ambientDependencies": {
+    "big.js": "github:DefinitelyTyped/DefinitelyTyped/big.js/big.js.d.ts#7d58f574a7faf3caac3ccdfb10576199949b879c"
+  }
+}
