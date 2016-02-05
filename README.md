@@ -40,7 +40,7 @@ var config = {
   groupDelimiter: ".",
   decimalDelimiter: ","
 };
-var stutz = Stutz.from("USD 123.456,79");
+var stutz = Stutz.from("USD 123.456,79", config);
 console.log(stutz.getAmount().toFixed(2)); // "123456.79" 
 ```
 
