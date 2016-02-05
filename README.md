@@ -8,6 +8,11 @@ Import the stutz script by adding a script tag in the html header:
 <script src="dist/stutz.min.js"></script>
 ```
 
+Or by adding an npm dependency
+```
+npm install stutzjs --save
+```
+
 ## Format values
 ```js
 var stutz = new Stutz("CHF", "123456.789");
