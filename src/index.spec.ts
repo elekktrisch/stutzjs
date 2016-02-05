@@ -77,4 +77,16 @@ describe('Stutz', () => {
     expect(yFormattedMoney).toEqual("YYY 123.46");
   });
 
+
+  it('should format negative values', () => {
+    // arrange
+    let stutz: Stutz = new Stutz("CHF", "-100.2000");
+
+    // act
+    var formattedMoney = stutz.formatMoney();
+
+    // assert
+    expect(formattedMoney).toEqual("CHF -100.20");
+  });
+
 });
