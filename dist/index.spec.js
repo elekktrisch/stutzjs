@@ -1,9 +1,12 @@
 var index_1 = require("./index");
 require("jasmine");
 describe('Stutz', function () {
+    beforeEach(function () {
+        index_1.default.config().reset();
+    });
     it('should parse string to BigDecimal value', function () {
         // arrange
-        var stutz = new index_1.default("CHF", "100.2000");
+        var stutz = index_1.default.of("CHF", "100.2000");
         // act
         var amount = stutz.getAmount();
         // assert
@@ -11,7 +14,7 @@ describe('Stutz', function () {
     });
     it('should store the currency code', function () {
         // arrange
-        var stutz = new index_1.default("CHF", "100.2000");
+        var stutz = index_1.default.of("CHF", "100.2000");
         // act
         var currencyCode = stutz.getCurrencyCode();
         // assert
@@ -19,7 +22,8 @@ describe('Stutz', function () {
     });
     it('should format the currency with fixed decimals', function () {
         // arrange
-        var stutz = new index_1.default("CHF", "100.2000");
+        index_1.default.config();
+        var stutz = index_1.default.of("CHF", "100.2000");
         // act
         var formattedMoney = stutz.formatMoney();
         // assert
@@ -27,12 +31,10 @@ describe('Stutz', function () {
     });
     it('should allow for custom formatter', function () {
         // arrange
-        var config = {
-            formatter: function (amount, currencyCode) {
-                return amount.toFixed(3) + " extremely customized format " + currencyCode;
-            }
-        };
-        var stutz = new index_1.default("CHF", "123.456789", config);
+        index_1.default.config().useFormatter(function (amount, currencyCode) {
+            return amount.toFixed(3) + " extremely customized format " + currencyCode;
+        });
+        var stutz = index_1.default.of("CHF", "123.456789");
         // act
         var formattedMoney = stutz.formatMoney();
         // assert
@@ -40,11 +42,9 @@ describe('Stutz', function () {
     });
     it('should respect the number of decimals per currency', function () {
         // arrange
-        var config = {
-            currencies: { "YYY": 2, "ZZZ": 5 }
-        };
-        var zStutz = new index_1.default("ZZZ", "123.456789123", config);
-        var yStutz = new index_1.default("YYY", "123.456789123", config);
+        index_1.default.config().forCurrency("ZZZ").useDecimalPlaces(5);
+        var zStutz = index_1.default.of("ZZZ", "123.456789123");
+        var yStutz = index_1.default.of("YYY", "123.456789123");
         // act
         var zFormattedMoney = zStutz.formatMoney();
         var yFormattedMoney = yStutz.formatMoney();
@@ -54,7 +54,7 @@ describe('Stutz', function () {
     });
     it('should format negative values', function () {
         // arrange
-        var stutz = new index_1.default("CHF", "-100.2000");
+        var stutz = index_1.default.of("CHF", "-100.2000");
         // act
         var formattedMoney = stutz.formatMoney();
         // assert
@@ -62,7 +62,7 @@ describe('Stutz', function () {
     });
     it('should format values with digits grouping for large amounts', function () {
         // arrange
-        var stutz = new index_1.default("CHF", "1234654987.123");
+        var stutz = index_1.default.of("CHF", "1234654987.123");
         // act
         var formattedMoney = stutz.formatMoney();
         // assert
@@ -70,10 +70,8 @@ describe('Stutz', function () {
     });
     it('should allow for custom group delimiter', function () {
         // arrange
-        var config = {
-            groupDelimiter: ","
-        };
-        var stutz = new index_1.default("CHF", "1234654987.123", config);
+        index_1.default.config().useGroupDelimiter(",");
+        var stutz = index_1.default.of("CHF", "1234654987.123");
         // act
         var formattedMoney = stutz.formatMoney();
         // assert
@@ -81,10 +79,8 @@ describe('Stutz', function () {
     });
     it('should allow for custom decimal delimiter', function () {
         // arrange
-        var config = {
-            decimalDelimiter: ","
-        };
-        var stutz = new index_1.default("CHF", "12345.678", config);
+        index_1.default.config().useDecimalDelimiter(",");
+        var stutz = index_1.default.of("CHF", "12345.678");
         // act
         var formattedMoney = stutz.formatMoney();
         // assert
@@ -92,7 +88,7 @@ describe('Stutz', function () {
     });
     it('should parse an amount value correctly', function () {
         // arrange
-        var stutz = index_1.default.from("CHF 12'345.68");
+        var stutz = index_1.default.parse("CHF 12'345.68");
         // act
         var amountValue = stutz.getAmount();
         var currencyCode = stutz.getCurrencyCode();
@@ -102,10 +98,8 @@ describe('Stutz', function () {
     });
     it('should parse an amount value with custom decimal delimiter correctly', function () {
         // arrange
-        var config = {
-            decimalDelimiter: ","
-        };
-        var stutz = index_1.default.from("CHF 12'345,68", config);
+        index_1.default.config().useDecimalDelimiter(",");
+        var stutz = index_1.default.parse("CHF 12'345,68");
         // act
         var amountValue = stutz.getAmount();
         var currencyCode = stutz.getCurrencyCode();
@@ -115,13 +109,31 @@ describe('Stutz', function () {
     });
     it('should parse an amount value with custom decimal delimiter and custom group delimiter correctly', function () {
         // arrange
-        var config = {
-            groupDelimiter: ".",
-            decimalDelimiter: ","
-        };
-        var stutz = index_1.default.from("USD 123.456,79", config);
+        index_1.default.config().useGroupDelimiter(".").useDecimalDelimiter(",");
+        var stutz = index_1.default.parse("USD 123.456,79");
         // assert
         expect(stutz.getAmount().toFixed(2)).toEqual("123456.79");
+    });
+    it('should allow for different configs based on locales', function () {
+        // arrange
+        index_1.default.config("de_DE").useGroupDelimiter("-").useDecimalDelimiter("=");
+        index_1.default.config("de_CH").useGroupDelimiter("'").useDecimalDelimiter(".");
+        index_1.default.config("de_AU").useGroupDelimiter(".").useDecimalDelimiter(",");
+        var stutz = index_1.default.of("CHF", "123456.79");
+        // assert
+        expect("de: " + stutz.formatMoney("de_DE")).toEqual("de: CHF 123-456=79");
+        expect("ch: " + stutz.formatMoney("de_CH")).toEqual("ch: CHF 123'456.79");
+        expect("au: " + stutz.formatMoney("de_AU")).toEqual("au: CHF 123.456,79");
+    });
+    it('should allow for different configs based on currencies', function () {
+        // arrange
+        index_1.default.config().forCurrency("EUR").useGroupDelimiter("-").useDecimalDelimiter("=");
+        index_1.default.config().forCurrency("CHF").useGroupDelimiter("_").useDecimalDelimiter(".");
+        var eur = index_1.default.of("EUR", "123456.79");
+        var chf = index_1.default.of("CHF", "123456.79");
+        // assert
+        expect(eur.formatMoney()).toEqual("EUR 123-456=79");
+        expect(chf.formatMoney()).toEqual("CHF 123_456.79");
     });
 });
 //# sourceMappingURL=index.spec.js.map

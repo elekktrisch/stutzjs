@@ -1,65 +1,149 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var Big = require("big.js");
-var StutzConfig = (function () {
-    function StutzConfig() {
+require("core-js/modules/es6.object.assign");
+var StutzConfigImpl = (function () {
+    function StutzConfigImpl() {
+        this.reset();
     }
-    return StutzConfig;
+    StutzConfigImpl.prototype.reset = function () {
+        this.locale = DEFAULT_LOCALE;
+        this.currencyCode = FALLBACK_CURRENCY_CODE;
+        this.decimalPlaces = DEFAULT_DECIMAL_PLACES;
+        this.groupDelimiter = DEFAULT_GROUP_DELIMITER;
+        this.decimalDelimiter = DEFAULT_DECIMAL_DELIMITER;
+        this.formatter = DEFAULT_FORMATTER;
+    };
+    StutzConfigImpl.from = function (other) {
+        var newConfig = Object.assign(new StutzConfigImpl(), other);
+        newConfig.formatter = other.formatter;
+        return newConfig;
+    };
+    return StutzConfigImpl;
 })();
-exports.StutzConfig = StutzConfig;
 function addDigitGrouping(amountValue, groupDelimiter) {
     return amountValue.replace(/(\d)(?=(\d{3})+\.)/g, '$1' + groupDelimiter);
 }
+function replaceDecimalDelimiter(groupedAmountValue, decimalDelimiter) {
+    var idx = groupedAmountValue.lastIndexOf(".");
+    return groupedAmountValue.substring(0, idx) + decimalDelimiter + groupedAmountValue.substring(idx + 1);
+}
+var FALLBACK_CURRENCY_CODE = "-$-";
 var DEFAULT_DECIMAL_DELIMITER = ".";
 var DEFAULT_GROUP_DELIMITER = "'";
-var DEFAULT_DECIMALS = 2;
-var DEFAULT_CURRENCIES = { "CHF": 2, "USD": 2 };
-var DEFAULT_FORMATTER = function (currencies, groupDelimiter, decimalDelimiter) {
-    return function (amount, currencyCode) {
-        var decimals = currencies && currencies[currencyCode];
-        var amountValue = amount.toFixed(decimals || DEFAULT_DECIMALS);
-        return currencyCode + " " + addDigitGrouping(amountValue, groupDelimiter).replace(".", decimalDelimiter);
-    };
+var DEFAULT_DECIMAL_PLACES = 2;
+var DEFAULT_FORMATTER = function (amount, currencyCode, config) {
+    var _config = config || CONFIG_REPOSITORY.configFor(DEFAULT_LOCALE, currencyCode);
+    var amountValue = amount.toFixed(_config.decimalPlaces || DEFAULT_DECIMAL_PLACES);
+    var groupedAmountValue = addDigitGrouping(amountValue, _config.groupDelimiter);
+    var formattedAmount = replaceDecimalDelimiter(groupedAmountValue, _config.decimalDelimiter);
+    return currencyCode + " " + formattedAmount;
 };
-var Stutz = (function () {
-    function Stutz(currencyCode, value, config) {
+var DEFAULT_LOCALE = "_default_locale";
+var ConfigRepository = (function () {
+    function ConfigRepository() {
+        this.configs = {};
+        this.reset();
+    }
+    ConfigRepository.prototype.reset = function () {
+        this.configs[DEFAULT_LOCALE] = {};
+        this.configs[DEFAULT_LOCALE][FALLBACK_CURRENCY_CODE] = new StutzConfigImpl();
+    };
+    ConfigRepository.prototype.configFor = function (locale, currencyCode, forceInit) {
+        var _locale = locale || DEFAULT_LOCALE;
+        var _currencyCode = currencyCode || FALLBACK_CURRENCY_CODE;
+        var isNewLocale = false;
+        if (!this.configs[_locale]) {
+            this.configs[_locale] = {};
+            isNewLocale = true;
+        }
+        if (forceInit || isNewLocale) {
+            var newConfig = new StutzConfigImpl();
+            this.configs[_locale][_currencyCode] = newConfig;
+        }
+        else if (!this.configs[_locale][_currencyCode]) {
+            var newConfig = StutzConfigImpl.from(this.configFor(_locale, FALLBACK_CURRENCY_CODE));
+            newConfig.locale = locale;
+            newConfig.currencyCode = currencyCode;
+            this.configs[_locale][_currencyCode] = newConfig;
+        }
+        return this.configs[_locale][_currencyCode];
+    };
+    return ConfigRepository;
+})();
+var CONFIG_REPOSITORY = new ConfigRepository();
+var StutzImpl = (function () {
+    function StutzImpl(currencyCode, value) {
         this.currencyCode = currencyCode;
         this.amount = new Big(value);
-        var currencies = config && config.currencies || DEFAULT_CURRENCIES;
-        var groupDelimiter = config && config.groupDelimiter || DEFAULT_GROUP_DELIMITER;
-        var decimalDelimiter = config && config.decimalDelimiter || DEFAULT_DECIMAL_DELIMITER;
-        var formatter = config && config.formatter || DEFAULT_FORMATTER(currencies, groupDelimiter, decimalDelimiter);
-        this.config = {
-            currencies: currencies,
-            groupDelimiter: groupDelimiter,
-            decimalDelimiter: decimalDelimiter,
-            formatter: formatter
-        };
     }
-    Stutz.prototype.getAmount = function () {
+    StutzImpl.prototype.getAmount = function () {
         return this.amount;
     };
-    Stutz.prototype.getCurrencyCode = function () {
+    StutzImpl.prototype.getCurrencyCode = function () {
         return this.currencyCode;
     };
-    Stutz.prototype.formatMoney = function () {
-        return this.config.formatter(this.amount, this.currencyCode);
+    StutzImpl.prototype.formatMoney = function (locale) {
+        var _locale = locale || DEFAULT_LOCALE;
+        var _config = CONFIG_REPOSITORY.configFor(_locale, this.currencyCode);
+        return _config.formatter(this.amount, this.currencyCode, _config);
     };
-    Stutz.from = function (formattedMoney, config) {
-        var groupDelimiter = config && config.groupDelimiter || DEFAULT_GROUP_DELIMITER;
-        var decimalDelimiter = config && config.decimalDelimiter || DEFAULT_DECIMAL_DELIMITER;
-        var amountValue = formattedMoney.replace(new RegExp("[^\\d" + decimalDelimiter + "]", "g"), '');
-        if (decimalDelimiter !== DEFAULT_DECIMAL_DELIMITER) {
-            amountValue = amountValue.replace(decimalDelimiter, DEFAULT_DECIMAL_DELIMITER);
+    return StutzImpl;
+})();
+var ConfigBuilder = (function () {
+    function ConfigBuilder(locale, currencyCode, forceInit) {
+        this.locale = locale || DEFAULT_LOCALE;
+        this.currencyCode = currencyCode || FALLBACK_CURRENCY_CODE;
+        this.config = CONFIG_REPOSITORY.configFor(this.locale, this.currencyCode, forceInit);
+    }
+    ConfigBuilder.prototype.reset = function () {
+        CONFIG_REPOSITORY.reset();
+    };
+    ConfigBuilder.prototype.forCurrency = function (currencyCode) {
+        return new ConfigBuilder(this.locale, currencyCode, true);
+    };
+    ConfigBuilder.prototype.useGroupDelimiter = function (groupDelimiter) {
+        this.config.groupDelimiter = groupDelimiter;
+        return this;
+    };
+    ConfigBuilder.prototype.useDecimalDelimiter = function (decimalDelimiter) {
+        this.config.decimalDelimiter = decimalDelimiter;
+        return this;
+    };
+    ConfigBuilder.prototype.useFormatter = function (formatter) {
+        this.config.formatter = formatter;
+        return this;
+    };
+    ConfigBuilder.prototype.useDecimalPlaces = function (decimalPlaces) {
+        this.config.decimalPlaces = decimalPlaces;
+        return this;
+    };
+    return ConfigBuilder;
+})();
+exports.ConfigBuilder = ConfigBuilder;
+var StutzFactory = (function () {
+    function StutzFactory() {
+    }
+    StutzFactory.of = function (currencyCode, value) {
+        return new StutzImpl(currencyCode, value);
+    };
+    StutzFactory.config = function (locale, currencyCode) {
+        return new ConfigBuilder(locale, currencyCode, true);
+    };
+    StutzFactory.parse = function (formattedMoney, config) {
+        var _config = config || CONFIG_REPOSITORY.configFor();
+        var amountValue = formattedMoney.replace(new RegExp("[^\\d" + _config.decimalDelimiter + "]", "g"), '');
+        if (_config.decimalDelimiter !== DEFAULT_DECIMAL_DELIMITER) {
+            amountValue = amountValue.replace(_config.decimalDelimiter, DEFAULT_DECIMAL_DELIMITER);
         }
-        var currencyCode = formattedMoney.replace(new RegExp("[\\d,'.\\s" + decimalDelimiter + groupDelimiter + "]", "g"), '');
-        return new Stutz(currencyCode, amountValue);
+        var currencyCode = formattedMoney.replace(new RegExp("[\\d,'.\\s" + _config.decimalDelimiter + _config.groupDelimiter + "]", "g"), '');
+        return new StutzImpl(currencyCode, amountValue);
     };
-    return Stutz;
+    return StutzFactory;
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = Stutz;
+exports.default = StutzFactory;
 
-},{"big.js":2}],2:[function(require,module,exports){
+},{"big.js":2,"core-js/modules/es6.object.assign":20}],2:[function(require,module,exports){
 /* big.js v3.1.3 https://github.com/MikeMcl/big.js/LICENCE */
 ;(function (global) {
     'use strict';
@@ -1203,4 +1287,229 @@ exports.default = Stutz;
     }
 })(this);
 
-},{}]},{},[1]);
+},{}],3:[function(require,module,exports){
+var $Object = Object;
+module.exports = {
+  create:     $Object.create,
+  getProto:   $Object.getPrototypeOf,
+  isEnum:     {}.propertyIsEnumerable,
+  getDesc:    $Object.getOwnPropertyDescriptor,
+  setDesc:    $Object.defineProperty,
+  setDescs:   $Object.defineProperties,
+  getKeys:    $Object.keys,
+  getNames:   $Object.getOwnPropertyNames,
+  getSymbols: $Object.getOwnPropertySymbols,
+  each:       [].forEach
+};
+},{}],4:[function(require,module,exports){
+module.exports = function(it){
+  if(typeof it != 'function')throw TypeError(it + ' is not a function!');
+  return it;
+};
+},{}],5:[function(require,module,exports){
+var toString = {}.toString;
+
+module.exports = function(it){
+  return toString.call(it).slice(8, -1);
+};
+},{}],6:[function(require,module,exports){
+var core = module.exports = {version: '2.0.3'};
+if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+},{}],7:[function(require,module,exports){
+// optional / simple context binding
+var aFunction = require('./_a-function');
+module.exports = function(fn, that, length){
+  aFunction(fn);
+  if(that === undefined)return fn;
+  switch(length){
+    case 1: return function(a){
+      return fn.call(that, a);
+    };
+    case 2: return function(a, b){
+      return fn.call(that, a, b);
+    };
+    case 3: return function(a, b, c){
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function(/* ...args */){
+    return fn.apply(that, arguments);
+  };
+};
+},{"./_a-function":4}],8:[function(require,module,exports){
+// 7.2.1 RequireObjectCoercible(argument)
+module.exports = function(it){
+  if(it == undefined)throw TypeError("Can't call method on  " + it);
+  return it;
+};
+},{}],9:[function(require,module,exports){
+// Thank's IE8 for his funny defineProperty
+module.exports = !require('./_fails')(function(){
+  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
+});
+},{"./_fails":11}],10:[function(require,module,exports){
+var global    = require('./_global')
+  , core      = require('./_core')
+  , hide      = require('./_hide')
+  , redefine  = require('./_redefine')
+  , ctx       = require('./_ctx')
+  , PROTOTYPE = 'prototype';
+
+var $export = function(type, name, source){
+  var IS_FORCED = type & $export.F
+    , IS_GLOBAL = type & $export.G
+    , IS_STATIC = type & $export.S
+    , IS_PROTO  = type & $export.P
+    , IS_BIND   = type & $export.B
+    , target    = IS_GLOBAL ? global : IS_STATIC ? global[name] || (global[name] = {}) : (global[name] || {})[PROTOTYPE]
+    , exports   = IS_GLOBAL ? core : core[name] || (core[name] = {})
+    , expProto  = exports[PROTOTYPE] || (exports[PROTOTYPE] = {})
+    , key, own, out, exp;
+  if(IS_GLOBAL)source = name;
+  for(key in source){
+    // contains in native
+    own = !IS_FORCED && target && target[key] !== undefined;
+    // export native or passed
+    out = (own ? target : source)[key];
+    // bind timers to global for call from export context
+    exp = IS_BIND && own ? ctx(out, global) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
+    // extend global
+    if(target && !own)redefine(target, key, out, type & $export.U);
+    // export
+    if(exports[key] != out)hide(exports, key, exp);
+    if(IS_PROTO && expProto[key] != out)expProto[key] = out;
+  }
+};
+global.core = core;
+// type bitmap
+$export.F = 1;   // forced
+$export.G = 2;   // global
+$export.S = 4;   // static
+$export.P = 8;   // proto
+$export.B = 16;  // bind
+$export.W = 32;  // wrap
+$export.U = 64;  // safe
+$export.R = 128; // real proto method for `library` 
+module.exports = $export;
+},{"./_core":6,"./_ctx":7,"./_global":12,"./_hide":13,"./_redefine":17}],11:[function(require,module,exports){
+module.exports = function(exec){
+  try {
+    return !!exec();
+  } catch(e){
+    return true;
+  }
+};
+},{}],12:[function(require,module,exports){
+// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+var global = module.exports = typeof window != 'undefined' && window.Math == Math
+  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
+if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
+},{}],13:[function(require,module,exports){
+var $          = require('./_')
+  , createDesc = require('./_property-desc');
+module.exports = require('./_descriptors') ? function(object, key, value){
+  return $.setDesc(object, key, createDesc(1, value));
+} : function(object, key, value){
+  object[key] = value;
+  return object;
+};
+},{"./_":3,"./_descriptors":9,"./_property-desc":16}],14:[function(require,module,exports){
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+var cof = require('./_cof');
+module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
+  return cof(it) == 'String' ? it.split('') : Object(it);
+};
+},{"./_cof":5}],15:[function(require,module,exports){
+'use strict';
+// 19.1.2.1 Object.assign(target, source, ...)
+var $        = require('./_')
+  , toObject = require('./_to-object')
+  , IObject  = require('./_iobject');
+
+// should work with symbols and should have deterministic property order (V8 bug)
+module.exports = require('./_fails')(function(){
+  var a = Object.assign
+    , A = {}
+    , B = {}
+    , S = Symbol()
+    , K = 'abcdefghijklmnopqrst';
+  A[S] = 7;
+  K.split('').forEach(function(k){ B[k] = k; });
+  return a({}, A)[S] != 7 || Object.keys(a({}, B)).join('') != K;
+}) ? function assign(target, source){ // eslint-disable-line no-unused-vars
+  var T     = toObject(target)
+    , aLen  = arguments.length
+    , index = 1
+    , getKeys    = $.getKeys
+    , getSymbols = $.getSymbols
+    , isEnum     = $.isEnum;
+  while(aLen > index){
+    var S      = IObject(arguments[index++])
+      , keys   = getSymbols ? getKeys(S).concat(getSymbols(S)) : getKeys(S)
+      , length = keys.length
+      , j      = 0
+      , key;
+    while(length > j)if(isEnum.call(S, key = keys[j++]))T[key] = S[key];
+  }
+  return T;
+} : Object.assign;
+},{"./_":3,"./_fails":11,"./_iobject":14,"./_to-object":18}],16:[function(require,module,exports){
+module.exports = function(bitmap, value){
+  return {
+    enumerable  : !(bitmap & 1),
+    configurable: !(bitmap & 2),
+    writable    : !(bitmap & 4),
+    value       : value
+  };
+};
+},{}],17:[function(require,module,exports){
+// add fake Function#toString
+// for correct work wrapped methods / constructors with methods like LoDash isNative
+var global    = require('./_global')
+  , hide      = require('./_hide')
+  , SRC       = require('./_uid')('src')
+  , TO_STRING = 'toString'
+  , $toString = Function[TO_STRING]
+  , TPL       = ('' + $toString).split(TO_STRING);
+
+require('./_core').inspectSource = function(it){
+  return $toString.call(it);
+};
+
+(module.exports = function(O, key, val, safe){
+  if(typeof val == 'function'){
+    val.hasOwnProperty(SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
+    val.hasOwnProperty('name') || hide(val, 'name', key);
+  }
+  if(O === global){
+    O[key] = val;
+  } else {
+    if(!safe){
+      delete O[key];
+      hide(O, key, val);
+    } else {
+      if(O[key])O[key] = val;
+      else hide(O, key, val);
+    }
+  }
+})(Function.prototype, TO_STRING, function toString(){
+  return typeof this == 'function' && this[SRC] || $toString.call(this);
+});
+},{"./_core":6,"./_global":12,"./_hide":13,"./_uid":19}],18:[function(require,module,exports){
+// 7.1.13 ToObject(argument)
+var defined = require('./_defined');
+module.exports = function(it){
+  return Object(defined(it));
+};
+},{"./_defined":8}],19:[function(require,module,exports){
+var id = 0
+  , px = Math.random();
+module.exports = function(key){
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+},{}],20:[function(require,module,exports){
+// 19.1.3.1 Object.assign(target, source)
+var $export = require('./_export');
+
+$export($export.S + $export.F, 'Object', {assign: require('./_object-assign')});
+},{"./_export":10,"./_object-assign":15}]},{},[1]);

@@ -1,13 +1,17 @@
 import * as Big from "big.js";
-import Stutz from "./index";
-import {StutzConfig} from "./index";
+import Money from "./index";
+import {Stutz} from "./index";
 import "jasmine";
 
 describe('Stutz', () => {
 
+  beforeEach(() => {
+    Money.config().reset();
+  });
+
   it('should parse string to BigDecimal value', () => {
     // arrange
-    let stutz: Stutz = new Stutz("CHF", "100.2000");
+    let stutz: Stutz = Money.of("CHF", "100.2000");
 
     // act
     let amount: BigJsLibrary.BigJS = stutz.getAmount();
@@ -19,7 +23,7 @@ describe('Stutz', () => {
 
   it('should store the currency code', () => {
     // arrange
-    let stutz: Stutz = new Stutz("CHF", "100.2000");
+    let stutz: Stutz = Money.of("CHF", "100.2000");
 
     // act
     let currencyCode = stutz.getCurrencyCode();
@@ -31,7 +35,8 @@ describe('Stutz', () => {
 
   it('should format the currency with fixed decimals', () => {
     // arrange
-    let stutz: Stutz = new Stutz("CHF", "100.2000");
+    Money.config();
+    let stutz: Stutz = Money.of("CHF", "100.2000");
 
     // act
     let formattedMoney = stutz.formatMoney();
@@ -43,13 +48,10 @@ describe('Stutz', () => {
 
   it('should allow for custom formatter', () => {
     // arrange
-    let config: any = {
-      formatter: (amount: BigJsLibrary.BigJS, currencyCode: string) => {
-        return amount.toFixed(3) + " extremely customized format " + currencyCode;
-      }
-    };
-
-    let stutz: Stutz = new Stutz("CHF", "123.456789", config);
+    Money.config().useFormatter((amount: BigJsLibrary.BigJS, currencyCode: string) => {
+      return amount.toFixed(3) + " extremely customized format " + currencyCode;
+    });
+    let stutz: Stutz = Money.of("CHF", "123.456789");
 
     // act
     let formattedMoney = stutz.formatMoney();
@@ -61,12 +63,10 @@ describe('Stutz', () => {
 
   it('should respect the number of decimals per currency', () => {
     // arrange
-    let config: any = {
-      currencies: {"YYY": 2, "ZZZ": 5}
-    };
+    Money.config().forCurrency("ZZZ").useDecimalPlaces(5);
 
-    let zStutz: Stutz = new Stutz("ZZZ", "123.456789123", config);
-    let yStutz: Stutz = new Stutz("YYY", "123.456789123", config);
+    let zStutz: Stutz = Money.of("ZZZ", "123.456789123");
+    let yStutz: Stutz = Money.of("YYY", "123.456789123");
 
     // act
     let zFormattedMoney = zStutz.formatMoney();
@@ -80,7 +80,7 @@ describe('Stutz', () => {
 
   it('should format negative values', () => {
     // arrange
-    let stutz: Stutz = new Stutz("CHF", "-100.2000");
+    let stutz: Stutz = Money.of("CHF", "-100.2000");
 
     // act
     let formattedMoney = stutz.formatMoney();
@@ -92,7 +92,7 @@ describe('Stutz', () => {
 
   it('should format values with digits grouping for large amounts', () => {
     // arrange
-    let stutz: Stutz = new Stutz("CHF", "1234654987.123");
+    let stutz: Stutz = Money.of("CHF", "1234654987.123");
 
     // act
     let formattedMoney = stutz.formatMoney();
@@ -104,10 +104,8 @@ describe('Stutz', () => {
 
   it('should allow for custom group delimiter', () => {
     // arrange
-    let config: any = {
-      groupDelimiter: ","
-    };
-    let stutz: Stutz = new Stutz("CHF", "1234654987.123", config);
+    Money.config().useGroupDelimiter(",");
+    let stutz: Stutz = Money.of("CHF", "1234654987.123");
 
     // act
     let formattedMoney = stutz.formatMoney();
@@ -119,10 +117,8 @@ describe('Stutz', () => {
 
   it('should allow for custom decimal delimiter', () => {
     // arrange
-    let config: any = {
-      decimalDelimiter: ","
-    };
-    let stutz: Stutz = new Stutz("CHF", "12345.678", config);
+    Money.config().useDecimalDelimiter(",");
+    let stutz: Stutz = Money.of("CHF", "12345.678");
 
     // act
     let formattedMoney = stutz.formatMoney();
@@ -134,7 +130,7 @@ describe('Stutz', () => {
 
   it('should parse an amount value correctly', () => {
     // arrange
-    let stutz: Stutz = Stutz.from("CHF 12'345.68");
+    let stutz: Stutz = Money.parse("CHF 12'345.68");
 
     // act
     let amountValue = stutz.getAmount();
@@ -148,10 +144,8 @@ describe('Stutz', () => {
 
   it('should parse an amount value with custom decimal delimiter correctly', () => {
     // arrange
-    let config: any = {
-      decimalDelimiter: ","
-    };
-    let stutz: Stutz = Stutz.from("CHF 12'345,68", config);
+    Money.config().useDecimalDelimiter(",");
+    let stutz: Stutz = Money.parse("CHF 12'345,68");
 
     // act
     let amountValue = stutz.getAmount();
@@ -165,14 +159,38 @@ describe('Stutz', () => {
 
   it('should parse an amount value with custom decimal delimiter and custom group delimiter correctly', () => {
     // arrange
-    let config: any = {
-      groupDelimiter: ".",
-      decimalDelimiter: ","
-    };
-    let stutz = Stutz.from("USD 123.456,79", config);
+    Money.config().useGroupDelimiter(".").useDecimalDelimiter(",");
+    let stutz = Money.parse("USD 123.456,79");
 
     // assert
     expect(stutz.getAmount().toFixed(2)).toEqual("123456.79");
+  });
+
+
+  it('should allow for different configs based on locales', () => {
+    // arrange
+    Money.config("de_DE").useGroupDelimiter("-").useDecimalDelimiter("=");
+    Money.config("de_CH").useGroupDelimiter("'").useDecimalDelimiter(".");
+    Money.config("de_AU").useGroupDelimiter(".").useDecimalDelimiter(",");
+    let stutz = Money.of("CHF", "123456.79");
+
+    // assert
+    expect("de: " + stutz.formatMoney("de_DE")).toEqual("de: CHF 123-456=79");
+    expect("ch: " + stutz.formatMoney("de_CH")).toEqual("ch: CHF 123'456.79");
+    expect("au: " + stutz.formatMoney("de_AU")).toEqual("au: CHF 123.456,79");
+  });
+
+
+  it('should allow for different configs based on currencies', () => {
+    // arrange
+    Money.config().forCurrency("EUR").useGroupDelimiter("-").useDecimalDelimiter("=");
+    Money.config().forCurrency("CHF").useGroupDelimiter("_").useDecimalDelimiter(".");
+    let eur = Money.of("EUR", "123456.79");
+    let chf = Money.of("CHF", "123456.79");
+
+    // assert
+    expect(eur.formatMoney()).toEqual("EUR 123-456=79");
+    expect(chf.formatMoney()).toEqual("CHF 123_456.79");
   });
 
 });

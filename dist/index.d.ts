@@ -1,21 +1,27 @@
 export interface CurrencyFormatter {
-    (amount: BigJsLibrary.BigJS, currencyCode: string): any;
+    (amount: BigJsLibrary.BigJS, currencyCode: string, config?: StutzConfig): string;
 }
-export declare class StutzConfig {
-    currencies: {
-        [currencyCode: string]: number;
-    };
-    groupDelimiter: string;
-    decimalDelimiter: string;
-    formatter: CurrencyFormatter;
+export interface StutzConfig {
 }
-export default class Stutz {
-    private amount;
-    private currencyCode;
-    private config;
-    constructor(currencyCode: string, value: string, config?: StutzConfig);
+export interface Stutz {
     getAmount(): BigJsLibrary.BigJS;
     getCurrencyCode(): string;
-    formatMoney(): string;
-    static from(formattedMoney: string, config?: StutzConfig): Stutz;
+    formatMoney(locale?: string): string;
+}
+export declare class ConfigBuilder {
+    private locale;
+    private currencyCode;
+    private config;
+    constructor(locale?: string, currencyCode?: string, forceInit?: boolean);
+    reset(): void;
+    forCurrency(currencyCode?: string): ConfigBuilder;
+    useGroupDelimiter(groupDelimiter: string): ConfigBuilder;
+    useDecimalDelimiter(decimalDelimiter: string): ConfigBuilder;
+    useFormatter(formatter: CurrencyFormatter): ConfigBuilder;
+    useDecimalPlaces(decimalPlaces: number): ConfigBuilder;
+}
+export default class StutzFactory {
+    static of(currencyCode: string, value: string): Stutz;
+    static config(locale?: string, currencyCode?: string): ConfigBuilder;
+    static parse(formattedMoney: string, config?: StutzConfig): Stutz;
 }

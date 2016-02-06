@@ -1,14 +1,14 @@
 {
   "name": "stutzjs",
-  "version": "0.0.2",
+  "version": "0.0.3-alpha.1",
   "description": "Formats currency values",
   "main": "dist/stutz.js",
   "typings": "dist/index.d.ts",
   "scripts": {
     "bundle": "node node_modules/typescript/bin/tsc --declaration && npm run browserify && npm run uglify",
-    "browserify": "node node_modules/browserify/bin/cmd.js dist/index.js --outfile dist/stutz.js",
+    "browserify": "node node_modules/browserify/bin/cmd.js dist/index.js --outfile dist/stutz.standalone.js",
     "browserify-test": "node node_modules/browserify/bin/cmd.js dist/index.spec.js --outfile dist/stutz.spec.js",
-    "uglify": "node node_modules/uglify-js/bin/uglifyjs dist/stutz.js --compress --mangle --output dist/stutz.min.js",
+    "uglify": "node node_modules/uglify-js/bin/uglifyjs dist/stutz.standalone.js --compress --output dist/stutz.standalone.min.js",
     "start": "node node_modules/typescript/bin/tsc --watch",
     "test": "npm run bundle && npm run browserify-test && node node_modules/karma/bin/karma start --single-run",
     "test-dev": "npm run browserify-test && node node_modules/karma/bin/karma start"

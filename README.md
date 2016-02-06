@@ -5,55 +5,45 @@
 ## Getting started
 Import the stutz script by adding a script tag in the html header:
 ```html
-<script src="dist/stutz.min.js"></script>
-```
-
+<script src="dist/stutz.standalone.min.js"></script>
+```       
 Or by adding an npm dependency
 ```
 npm install stutzjs --save
 ```
+Import the modules
+```js
+import * as Big from "big.js";
+import Money from "stutzjs";
+import {Stutz} from "stutzjs";
+```
 
 ## Format values
-```js
-var stutz = new Stutz("CHF", "123456.789");
-console.log(stutz.formatMoney()); // "CHF 123'456.79" 
+```js                               
+var stutz = Money.of("CHF", "1234654987.123");
+var formattedMoney = stutz.formatMoney(); // "CHF 1'234'654'987.12"
 ```
 
 ## Parse formatted values
 ```js
-var stutz = Stutz.from("CHF 123'456.79");
-console.log(stutz.getAmount().toFixed(3)); // "123456.790" 
+var stutz = Money.parse("CHF 1'234'654'987.12");
+console.log(stutz.getAmount().toFixed(3)); // "1234654987.123" 
 console.log(stutz.getCurrencyCode()); // "CHF" 
 ```
 
 ## Customization / Localization
 ```js
-var currencies: {"USD": 2, "JOD": 3}  // number of decimals per currency 
-var config = {
-  currencies: currencies,
-  groupDelimiter: "'",
-  decimalDelimiter: ".",
-  formatter: function(amount, currencyCode) {
-    var decimalPlaces = currencies[currencyCode] || 2;
-    return currencyCode + " " + amount.toFixed(decimalPlaces);
-  }
-}
-```
-### Customization Example 1  
-```js
-var config = {     
-  groupDelimiter: ".",
-  decimalDelimiter: ","
-};
-var stutz = Stutz.from("USD 123.456,79", config);
-console.log(stutz.getAmount().toFixed(2)); // "123456.79" 
+Money.config().useGroupDelimiter(",");
+let stutz: Stutz = Money.of("CHF", "1234654987.123");
+let formattedMoney = stutz.formatMoney(); // "CHF 1,234,654,987.12"
 ```
 
-### Customization Example 2  
+### All configuration options   
 ```js
-var config = {     
-  currencies: {"ZZZ": 5, "USD": 2}
-};
-var stutz = new Stutz("123456.78", "ZZZ", config);
-console.log(stutz.formatMoney()); // "ZZZ 123'456.79000"    
+Money.config()
+  .forCurrency(currencyCode) // string
+  .useGroupDelimiter(groupDelimiter) // string
+  .useDecimalDelimiter(decimalDelimiter) // string
+  .useFormatter(formatter) // function accepting (amount: BigJsLibrary.BigJS, currencyCode: string, config?: StutzConfig) and returning string
+  .useDecimalPlaces(decimalPlaces) // number      
 ```
