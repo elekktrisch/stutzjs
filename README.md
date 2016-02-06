@@ -27,7 +27,7 @@ var formattedMoney = stutz.formatMoney(); // "CHF 1'234'654'987.12"
 ## Parse formatted values
 ```js
 var stutz = Money.parse("CHF 1'234'654'987.12");
-console.log(stutz.getAmount().toFixed(3)); // "1234654987.123" 
+console.log(stutz.getAmount().toFixed(3)); // "1234654987.120" 
 console.log(stutz.getCurrencyCode()); // "CHF" 
 ```
 
@@ -44,6 +44,9 @@ Money.config()
   .forCurrency(currencyCode) // string
   .useGroupDelimiter(groupDelimiter) // string
   .useDecimalDelimiter(decimalDelimiter) // string
-  .useFormatter(formatter) // function accepting (amount: BigJsLibrary.BigJS, currencyCode: string, config?: StutzConfig) and returning string
+  .useFormatter(formatter) // function(amount: BigJsLibrary.BigJS, 
+                           //          currencyCode: string, 
+                           //          config?: StutzConfig) 
+                           // and returning string
   .useDecimalPlaces(decimalPlaces) // number      
 ```
