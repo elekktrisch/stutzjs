@@ -1,7 +1,6 @@
 import * as Big from "big.js";
 import Money from "./index";
 import {Stutz} from "./index";
-import "jasmine";
 
 describe('Stutz', () => {
 

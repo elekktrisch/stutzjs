@@ -2,8 +2,10 @@
   "dependencies": {},
   "devDependencies": {},
   "ambientDependencies": {
+    "angular": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular.d.ts#3bebbe1baee04846cc46ed7249e8117e4cd7c7ff",
     "big.js": "github:DefinitelyTyped/DefinitelyTyped/big.js/big.js.d.ts#7d58f574a7faf3caac3ccdfb10576199949b879c",
     "core-js": "github:DefinitelyTyped/DefinitelyTyped/core-js/core-js.d.ts#c777572e8532c4d358306fe4c0e17a533f940b04",
-    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#26c98c8a9530c44f8c801ccc3b2057e2101187ee"
+    "jasmine": "github:DefinitelyTyped/DefinitelyTyped/jasmine/jasmine.d.ts#26c98c8a9530c44f8c801ccc3b2057e2101187ee",
+    "jquery": "github:DefinitelyTyped/DefinitelyTyped/jquery/jquery.d.ts#cf2a968f0edd7d30773f7d23fe3708fa029d5ab7"
   }
 }

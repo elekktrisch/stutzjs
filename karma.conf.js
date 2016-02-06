@@ -1,19 +1,26 @@
-module.exports = function(config) {
-    config.set({
-        basePath: '',
+module.exports = function (config) {
+    var webpackConfig = require('./webpack.config.js');
+    var minimist = require('minimist');
+
+    var configObject = {
+        basePath: 'src',
         frameworks: ['jasmine'],
-        files: [
-            'dist/stutz.js',
-            'dist/stutz.spec.js'
-        ],
-        exclude: [
-        ],
-        preprocessors: {},
+        files: ['index.spec.ts'],
         reporters: ['dots'],
-        colors: true,
-        logLevel: config.LOG_INFO,
-        autoWatch: true,
-        browsers: ['PhantomJS'],
-        singleRun: true
-    });
+        preprocessors: {
+            'index.spec.ts': ['webpack', 'sourcemap']
+        },
+        webpack: {
+            module: webpackConfig.module,
+            resolve: webpackConfig.resolve,
+            devtool: 'inline-source-map'
+        },
+        webpackMiddleware: {
+            noInfo: true
+        }
+    };
+
+    configObject.browsers = ['PhantomJS'];
+
+    config.set(configObject);
 };

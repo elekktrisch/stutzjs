@@ -5,42 +5,36 @@
 ## Getting started
 Import the stutz script by adding a script tag in the html header:
 ```html
-<script src="dist/stutz.standalone.min.js"></script>
+<script src="./stutz.standalone.js"></script>
 ```       
 Or by adding an npm dependency
 ```
 npm install stutzjs --save
 ```
-Import the modules
-```js
-import * as Big from "big.js";
-import Money from "stutzjs";
-import {Stutz} from "stutzjs";
-```
 
 ## Format values
 ```js                               
-var stutz = Money.of("CHF", "1234654987.123");
+var stutz = money.of("CHF", "1234654987.123");
 var formattedMoney = stutz.formatMoney(); // "CHF 1'234'654'987.12"
 ```
 
 ## Parse formatted values
 ```js
-var stutz = Money.parse("CHF 1'234'654'987.12");
+var stutz = money.parse("CHF 1'234'654'987.12");
 console.log(stutz.getAmount().toFixed(3)); // "1234654987.120" 
 console.log(stutz.getCurrencyCode()); // "CHF" 
 ```
 
 ## Customization / Localization
 ```js
-Money.config().useGroupDelimiter(",");
-let stutz: Stutz = Money.of("CHF", "1234654987.123");
+money.config().useGroupDelimiter(",");
+let stutz: Stutz = money.of("CHF", "1234654987.123");
 let formattedMoney = stutz.formatMoney(); // "CHF 1,234,654,987.12"
 ```
 
 ### All configuration options   
 ```js
-Money.config()
+money.config()
   .forCurrency(currencyCode) // string
   .useGroupDelimiter(groupDelimiter) // string
   .useDecimalDelimiter(decimalDelimiter) // string

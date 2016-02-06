@@ -1,0 +1,28 @@
+<html>
+<head>
+    <script src="./stutz.standalone.js"></script>
+    <script>
+        function textChanged(textValue) {
+            var s = money.parse(textValue);
+            document.getElementById("amount").value = s.getAmount();
+            document.getElementById("currencyCode").value = s.getCurrencyCode();
+        }
+        function currencyCodeChanged(currencyCode) {
+            var s = money.of(currencyCode, document.getElementById("amount").value);
+            document.getElementById("textValue").value = s.formatMoney();
+        }
+        function amountChanged(amount) {
+            var s = money.of(document.getElementById("currencyCode").value, amount);
+            document.getElementById("textValue").value = s.formatMoney();
+            document.getElementById("currencyCode").value = s.getCurrencyCode();
+        }
+    </script>
+</head>
+<body>
+
+<input id="textValue" onkeyup="textChanged(this.value)" value="CHF 123'465'479.66"></input>
+<input id="currencyCode" onkeyup="currencyCodeChanged(this.value)" value="CHF"></input>
+<input id="amount" onkeyup="amountChanged(this.value)" value="123465479.66"></input>
+
+</body>
+</html>
