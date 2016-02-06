@@ -3,6 +3,7 @@ node_js:
   - 4.1.1
 before_script:
   - npm install
+  - npm install-dts
 script:
   - npm run test
   - npm run bundle

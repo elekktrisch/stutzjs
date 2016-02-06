@@ -6,6 +6,7 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "prestart": "npm install",
+    "install-dts": "node node_modules/typings/dist/bin/typings.js install",
     "start": "webpack-dev-server --TARGET=DEV",
     "bundle": "webpack src/index.global.ts dist/stutz.global.js",
     "browserify": "node node_modules/browserify/bin/cmd.js dist/stutz.global.js --outfile dist/stutz.standalone.js",

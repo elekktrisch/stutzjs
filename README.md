@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/elekktrisch/stutzjs.svg?branch=master)](https://travis-ci.org/elekktrisch/stutzjs)
+
 # StutzJS
 * Solves the accuracy problems of the accountingjs library (http://openexchangerates.github.io/accounting.js) by using a bigdecimal implementation (credits http://mikemcl.github.io/big.js) instead of floatingpoint.
 * supports typescript by providing an ambient typings file
