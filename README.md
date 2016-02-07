@@ -4,6 +4,8 @@
 * Solves the accuracy problems of the accountingjs library (http://openexchangerates.github.io/accounting.js) by using a bigdecimal implementation (credits http://mikemcl.github.io/big.js) instead of floatingpoint.
 * supports typescript by providing an ambient typings file
 
+[Demo](https://raw.githubusercontent.com/elekktrisch/stutzjs/master/dist/index.html)
+
 ## Getting started
 Import the stutz script by adding a script tag in the html header:
 ```html
@@ -36,13 +38,11 @@ let formattedMoney = stutz.formatMoney(); // "CHF 1,234,654,987.12"
 
 ### All configuration options   
 ```js
-money.config()
+money.config(locale)
   .forCurrency(currencyCode) // string
   .useGroupDelimiter(groupDelimiter) // string
   .useDecimalDelimiter(decimalDelimiter) // string
-  .useFormatter(formatter) // function(amount: BigJsLibrary.BigJS, 
-                           //          currencyCode: string, 
-                           //          config?: StutzConfig) 
+  .useFormatter(formatter) // function(amount, currencyCode) 
                            // and returning string
   .useDecimalPlaces(decimalPlaces) // number      
 ```
