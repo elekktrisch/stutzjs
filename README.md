@@ -4,7 +4,7 @@
 * Solves the accuracy problems of the accountingjs library (http://openexchangerates.github.io/accounting.js) by using a bigdecimal implementation (credits http://mikemcl.github.io/big.js) instead of floatingpoint.
 * supports typescript by providing an ambient typings file
 
-[Demo](https://raw.githubusercontent.com/elekktrisch/stutzjs/master/dist/index.html)
+[Demo](https://cdn.rawgit.com/elekktrisch/stutzjs/master/dist/index.html)
 
 ## Getting started
 Import the stutz script by adding a script tag in the html header:
