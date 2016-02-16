@@ -191,7 +191,7 @@
                     </div>
                     <div class="form-group col-xs-12" style="margin-top:30px;">
                         <label>Formatted Value:</label>
-                        <input class="form-control" onkeyup="formattedInputChanged(this.value)" value="CHF 123'465'479.66"></input>
+                        <input class="form-control" onkeyup="formattedInputChanged(this.value)" onload="formattedInputChanged(this.value)" value="CHF 123'465'479.66"></input>
                     </div>
                     <div class="form-group col-xs-12">
                         <label>Result 1: Parsed Currency</label>
@@ -247,7 +247,7 @@ parsed.getCurrencyCode();</pre>
                 <div class="form-group col-xs-12">
                     <label>Custom number of decimal places:</label>
                     <pre class="code">money.config().useDecimalPlaces(5);</pre>
-                    <p id="decimal_places_config_result" class="calc-result">CHF 123'465'479.66000</p>
+                    <p id="decimal_places_config_result" class="calc-result">CHF 123'465'479.66500</p>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Custom formatter:</label>
@@ -255,7 +255,7 @@ parsed.getCurrencyCode();</pre>
   function (amount, currency) {
     return amount + " " + currency;
   });</pre>
-                    <p id="formatter_config_result" class="calc-result">123465479.66 CHF</p>
+                    <p id="formatter_config_result" class="calc-result">123465479.665 CHF</p>
                 </div>
             </div>
         </div>
