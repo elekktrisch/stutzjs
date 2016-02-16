@@ -66,7 +66,7 @@ const DEFAULT_FORMATTER = (amount: BigJsLibrary.BigJS, currencyCode: string, con
   let amountValue = amount.round(decimalPlaces, roundingMode).toFixed(decimalPlaces);
   let groupedAmountValue = addDigitGrouping(amountValue, _config.groupDelimiter);
   let formattedAmount = replaceDecimalDelimiter(groupedAmountValue, _config.decimalDelimiter);
-  if (_config.negativeSign === "()") {
+  if (_config.negativeSign === "()" && amount.lt(0)) {
     formattedAmount = "(" + formattedAmount.replace("-", "") + ")";
   } else {
     formattedAmount = formattedAmount.replace("-", _config.negativeSign);

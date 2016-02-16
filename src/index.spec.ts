@@ -115,6 +115,19 @@ describe('Stutz', () => {
   });
 
 
+  it('should format values without brackets in case the value is positive', () => {
+    // arrange
+    Money.config().useNegativeSign("()");
+    let stutz: Stutz = Money.of("CHF", "100.2000");
+
+    // act
+    let formattedMoney = stutz.formatMoney();
+
+    // assert
+    expect(formattedMoney).toEqual("CHF 100.20");
+  });
+
+
   it('should parse negative values', () => {
     // arrange
     let stutz: Stutz = Money.parse("CHF -12'345.68");
