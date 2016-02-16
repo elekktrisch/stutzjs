@@ -1,6 +1,6 @@
 {
   "name": "stutzjs",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Formats currency values",
   "main": "dist/stutz.standalone.js",
   "typings": "dist/index.d.ts",
