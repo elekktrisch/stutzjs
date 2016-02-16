@@ -129,6 +129,20 @@ describe('Stutz', () => {
   });
 
 
+  it('should parse negative values with bracket format', () => {
+    // arrange
+    let stutz: Stutz = Money.parse("CHF (12'345.68)");
+
+    // act
+    let amountValue = stutz.getAmount();
+    let currencyCode = stutz.getCurrencyCode();
+
+    // assert
+    expect(amountValue.toFixed(2)).toEqual("-12345.68");
+    expect(currencyCode).toEqual("CHF");
+  });
+
+
   it('should format values with digits grouping for large amounts', () => {
     // arrange
     let stutz: Stutz = Money.of("CHF", "1234654987.123");

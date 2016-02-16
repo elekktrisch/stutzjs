@@ -214,14 +214,13 @@ export default class StutzFactory {
   static parse(formattedMoney: string, config?: StutzConfig): Stutz {
     let _config: StutzConfigImpl = <StutzConfigImpl>config || CONFIG_REPOSITORY.configFor();
 
-    let amountValue: string = formattedMoney
-        .replace(new RegExp("[^\\d" + _config.decimalDelimiter + _config.negativeSign + "]", "g"), '')
-        .replace(/\((.*)\)/, "-$1"); // replace bracketed values with negatives;;
+    var moneyWithoutBrackets = formattedMoney.replace(/\((.*)\)/, "-$1");
+    let amountValue: string = moneyWithoutBrackets.replace(new RegExp("[^\\d" + _config.decimalDelimiter + _config.negativeSign + "]", "g"), '');
     if (_config.decimalDelimiter !== DEFAULT_DECIMAL_DELIMITER) {
       amountValue = amountValue
           .replace(_config.decimalDelimiter, DEFAULT_DECIMAL_DELIMITER)
     }
-    let currencyCode: string = formattedMoney.replace(new RegExp("[\\d,'.\\s" + _config.decimalDelimiter + _config.groupDelimiter + _config.negativeSign + "]", "g"), '');
+    let currencyCode: string = moneyWithoutBrackets.replace(new RegExp("[\\d,'.\\s" + _config.decimalDelimiter + _config.groupDelimiter + _config.negativeSign + "]", "g"), '');
 
     return new StutzImpl(currencyCode, amountValue);
   }

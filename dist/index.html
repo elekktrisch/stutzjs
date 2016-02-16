@@ -80,6 +80,11 @@
                 document.getElementById("decimal_places_config_result").innerHTML = s.formatMoney();
 
                 money.config().reset();
+                money.config().useNegativeSign("()");
+                s = money.of("CHF", amount);
+                document.getElementById("negative_sign_result").innerHTML = s.formatMoney();
+
+                money.config().reset();
                 money.config().useFormatter(function (amount, currency) {
                     return amount + " " + currency;
                 });
@@ -92,6 +97,7 @@
                 document.getElementById("decimal_places_config_result").innerHTML = err;
                 document.getElementById("formatter_config_result").innerHTML = err;
                 document.getElementById("round_half_up_result").innerHTML = err;
+                document.getElementById("negative_sign_result").innerHTML = err;
             }
         }
     </script>
@@ -226,32 +232,37 @@ parsed.getCurrencyCode(); // "CHF"</pre>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Amount:</label>
-                    <input class="form-control" onkeyup="amountForConfigsChanged(this.value)" value="123465479.665"></input>
+                    <input class="form-control" onkeyup="amountForConfigsChanged(this.value)" value="-123465479.665"></input>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Results:<br>with Default Config</label>
                     <pre class="code">money.config().reset();</pre>
-                    <p id="default_config_result" class="calc-result">CHF 123'465'479.66</p>
+                    <p id="default_config_result" class="calc-result">CHF -123'465'479.66</p>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Round half up:</label>
                     <pre class="code">money.config().useRoundHalfUp(true);</pre>
-                    <p id="round_half_up_result" class="calc-result">CHF 123'465'479.67</p>
+                    <p id="round_half_up_result" class="calc-result">CHF -123'465'479.67</p>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Custom thousands separator:</label>
                     <pre class="code">money.config().useGroupDelimiter(",");</pre>
-                    <p id="group_config_result" class="calc-result">CHF 123,465,479.66</p>
+                    <p id="group_config_result" class="calc-result">CHF -123,465,479.66</p>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Custom decimal separator:</label>
                     <pre class="code">money.config().useDecimalDelimiter(",");</pre>
-                    <p id="decimal_config_result" class="calc-result">CHF 123'465'479,66</p>
+                    <p id="decimal_config_result" class="calc-result">CHF -123'465'479,66</p>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Custom number of decimal places:</label>
                     <pre class="code">money.config().useDecimalPlaces(5);</pre>
-                    <p id="decimal_places_config_result" class="calc-result">CHF 123'465'479.66500</p>
+                    <p id="decimal_places_config_result" class="calc-result">CHF -123'465'479.66500</p>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label>Custom number of decimal places:</label>
+                    <pre class="code">money.config().useNegativeSign("()");</pre>
+                    <p id="negative_sign_result" class="calc-result">CHF (123'465'479.66)</p>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Custom formatter:</label>
@@ -259,7 +270,7 @@ parsed.getCurrencyCode(); // "CHF"</pre>
   function (amount, currency) {
     return amount + " " + currency;
   });</pre>
-                    <p id="formatter_config_result" class="calc-result">123465479.665 CHF</p>
+                    <p id="formatter_config_result" class="calc-result">-123465479.665 CHF</p>
                 </div>
             </div>
         </div>
