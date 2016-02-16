@@ -32,17 +32,18 @@ console.log(stutz.getCurrencyCode()); // "CHF"
 ## Customization / Localization
 ```js
 money.config().useGroupDelimiter(",");
-let stutz: Stutz = money.of("CHF", "1234654987.123");
-let formattedMoney = stutz.formatMoney(); // "CHF 1,234,654,987.12"
+var stutz = money.of("CHF", "1234654987.123");
+var formattedMoney = stutz.formatMoney(); // "CHF 1,234,654,987.12"
 ```
 
 ### All configuration options   
 ```js
-money.config(locale)
-  .forCurrency(currencyCode) // string
-  .useGroupDelimiter(groupDelimiter) // string
-  .useDecimalDelimiter(decimalDelimiter) // string
+money.config("de_CH") // locale
+  .forCurrency("CHF")
+  .useGroupDelimiter("'")
+  .useDecimalDelimiter(".")
   .useFormatter(formatter) // function(amount, currencyCode) 
                            // and returning string
-  .useDecimalPlaces(decimalPlaces) // number      
+  .useDecimalPlaces(2)    
+  .useRoundHalfUp(false)      
 ```

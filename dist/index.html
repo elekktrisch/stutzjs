@@ -142,6 +142,9 @@
             <a href="#features" class="btn btn-primary btn-xl page-scroll">Features</a>
         </div>
     </div>
+    <p style="position: absolute;right:20px;bottom:0;">
+        <a href="https://travis-ci.org/elekktrisch/stutzjs" target="_blank"><img src="https://travis-ci.org/elekktrisch/stutzjs.svg?branch=master"></a>
+    </p>
 </header>
 
 <section id="features">
@@ -159,7 +162,7 @@
                 <div class="service-box">
                     <div class="col-xs-12">
                         <i class="fa fa-4x fa-money wow bounceIn text-primary"></i>
-                        <h3>Number to Currency</h3>
+                        <h3>Format</h3>
                         <p class="text-muted">Change the currency or the number to see how the library formats them.</p>
                     </div>
                     <div class="form-group col-xs-12" style="margin-top:30px;">
@@ -177,8 +180,8 @@
                     <div class="col-xs-12">
                         <label>Easy to use API:</label>
                         <pre class="code">money
-  .of(currencyCode, amountText)
-  .formatMoney();</pre>
+  .of("CHF", "123465479.66")
+  .formatMoney(); // "CHF 123'465'479.66"</pre>
                     </div>
                 </div>
             </div>
@@ -186,7 +189,7 @@
                 <div class="service-box">
                     <div class="col-xs-12">
                         <i class="fa fa-4x fa-cogs wow bounceIn text-primary"></i>
-                        <h3>Currency to Number</h3>
+                        <h3>Unformat</h3>
                         <p class="text-muted">Change the formatted value and see how it is parsed.</p>
                     </div>
                     <div class="form-group col-xs-12" style="margin-top:30px;">
@@ -203,9 +206,10 @@
                     </div>
                     <div class="col-xs-12">
                         <label>Easy to use API:</label>
-                        <pre class="code">var parsed = money.parse(formattedText);
-parsed.getAmount();
-parsed.getCurrencyCode();</pre>
+                        <pre class="code">var parsed = money
+  .parse("CHF 123'465'479.66");
+parsed.getAmount(); // 123465479.66
+parsed.getCurrencyCode(); // "CHF"</pre>
                     </div>
                 </div>
             </div>
