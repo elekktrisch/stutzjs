@@ -20,6 +20,7 @@ export declare class ConfigBuilder {
     useFormatter(formatter: CurrencyFormatter): ConfigBuilder;
     useDecimalPlaces(decimalPlaces: number): ConfigBuilder;
     useRoundHalfUp(roundHalfUp: boolean): ConfigBuilder;
+    useNegativeSign(negativeSign: string): ConfigBuilder;
 }
 export default class StutzFactory {
     static of(currencyCode: string, value: string): Stutz;
