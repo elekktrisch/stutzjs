@@ -70,7 +70,7 @@
                 document.getElementById("group_config_result").innerHTML = s.formatMoney();
 
                 money.config().reset();
-                money.config().useDecimalDelimiter(".");
+                money.config().useDecimalDelimiter(",");
                 s = money.of("CHF", amount);
                 document.getElementById("decimal_config_result").innerHTML = s.formatMoney();
 
@@ -245,7 +245,7 @@ parsed.getCurrencyCode(); // "CHF"</pre>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Custom decimal separator:</label>
-                    <pre class="code">money.config().useDecimalDelimiter(".");</pre>
+                    <pre class="code">money.config().useDecimalDelimiter(",");</pre>
                     <p id="decimal_config_result" class="calc-result">CHF 123'465'479,66</p>
                 </div>
                 <div class="form-group col-xs-12">
