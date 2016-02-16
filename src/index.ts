@@ -17,6 +17,7 @@ class StutzConfigImpl implements StutzConfig {
   roundingMode: RoundingMode;
   groupDelimiter: string;
   decimalDelimiter: string;
+  negativeSign: string;
   formatter: CurrencyFormatter;
 
   constructor() {
@@ -30,6 +31,7 @@ class StutzConfigImpl implements StutzConfig {
     this.roundingMode = DEFAULT_ROUNDING_MODE;
     this.groupDelimiter = DEFAULT_GROUP_DELIMITER;
     this.decimalDelimiter = DEFAULT_DECIMAL_DELIMITER;
+    this.negativeSign = DEFAULT_NEGATIVE_SIGN;
     this.formatter = DEFAULT_FORMATTER;
   }
 
@@ -52,6 +54,7 @@ function replaceDecimalDelimiter(groupedAmountValue: string, decimalDelimiter: s
 
 const FALLBACK_CURRENCY_CODE: string = "-$-";
 const DEFAULT_DECIMAL_DELIMITER: string = ".";
+const DEFAULT_NEGATIVE_SIGN: string = "-";
 const DEFAULT_GROUP_DELIMITER: string = "'";
 const DEFAULT_DECIMAL_PLACES: number = 2;
 const DEFAULT_ROUNDING_MODE = RoundingMode.RoundTowardsZero;
@@ -63,6 +66,11 @@ const DEFAULT_FORMATTER = (amount: BigJsLibrary.BigJS, currencyCode: string, con
   let amountValue = amount.round(decimalPlaces, roundingMode).toFixed(decimalPlaces);
   let groupedAmountValue = addDigitGrouping(amountValue, _config.groupDelimiter);
   let formattedAmount = replaceDecimalDelimiter(groupedAmountValue, _config.decimalDelimiter);
+  if (_config.negativeSign === "()") {
+    formattedAmount = "(" + formattedAmount.replace("-", "") + ")";
+  } else {
+    formattedAmount = formattedAmount.replace("-", _config.negativeSign);
+  }
 
   return `${currencyCode} ${formattedAmount}`;
 };
@@ -186,6 +194,11 @@ export class ConfigBuilder {
     return this;
   }
 
+  useNegativeSign(negativeSign: string): ConfigBuilder {
+    this.config.negativeSign = negativeSign;
+    return this;
+  }
+
 }
 
 export default class StutzFactory {
@@ -201,11 +214,14 @@ export default class StutzFactory {
   static parse(formattedMoney: string, config?: StutzConfig): Stutz {
     let _config: StutzConfigImpl = <StutzConfigImpl>config || CONFIG_REPOSITORY.configFor();
 
-    let amountValue: string = formattedMoney.replace(new RegExp("[^\\d" + _config.decimalDelimiter + "]", "g"), '');
+    let amountValue: string = formattedMoney
+        .replace(new RegExp("[^\\d" + _config.decimalDelimiter + _config.negativeSign + "]", "g"), '')
+        .replace(/\((.*)\)/, "-$1"); // replace bracketed values with negatives;;
     if (_config.decimalDelimiter !== DEFAULT_DECIMAL_DELIMITER) {
-      amountValue = amountValue.replace(_config.decimalDelimiter, DEFAULT_DECIMAL_DELIMITER);
+      amountValue = amountValue
+          .replace(_config.decimalDelimiter, DEFAULT_DECIMAL_DELIMITER)
     }
-    let currencyCode: string = formattedMoney.replace(new RegExp("[\\d,'.\\s" + _config.decimalDelimiter + _config.groupDelimiter + "]", "g"), '');
+    let currencyCode: string = formattedMoney.replace(new RegExp("[\\d,'.\\s" + _config.decimalDelimiter + _config.groupDelimiter + _config.negativeSign + "]", "g"), '');
 
     return new StutzImpl(currencyCode, amountValue);
   }

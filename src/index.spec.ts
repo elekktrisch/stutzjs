@@ -89,6 +89,46 @@ describe('Stutz', () => {
   });
 
 
+  it('should format negative values with custom negative-sign', () => {
+    // arrange
+    Money.config().useNegativeSign("N");
+    let stutz: Stutz = Money.of("CHF", "-100.2000");
+
+    // act
+    let formattedMoney = stutz.formatMoney();
+
+    // assert
+    expect(formattedMoney).toEqual("CHF N100.20");
+  });
+
+
+  it('should format negative values with bracket negative-sign', () => {
+    // arrange
+    Money.config().useNegativeSign("()");
+    let stutz: Stutz = Money.of("CHF", "-100.2000");
+
+    // act
+    let formattedMoney = stutz.formatMoney();
+
+    // assert
+    expect(formattedMoney).toEqual("CHF (100.20)");
+  });
+
+
+  it('should parse negative values', () => {
+    // arrange
+    let stutz: Stutz = Money.parse("CHF -12'345.68");
+
+    // act
+    let amountValue = stutz.getAmount();
+    let currencyCode = stutz.getCurrencyCode();
+
+    // assert
+    expect(amountValue.toFixed(2)).toEqual("-12345.68");
+    expect(currencyCode).toEqual("CHF");
+  });
+
+
   it('should format values with digits grouping for large amounts', () => {
     // arrange
     let stutz: Stutz = Money.of("CHF", "1234654987.123");
