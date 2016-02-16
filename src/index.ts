@@ -1,5 +1,6 @@
 import * as Big from "big.js";
 import "core-js/modules/es6.object.assign";
+import RoundingMode = BigJsLibrary.RoundingMode;
 
 export interface CurrencyFormatter {
   (amount: BigJsLibrary.BigJS, currencyCode: string, config?: StutzConfig): string;
@@ -13,6 +14,7 @@ class StutzConfigImpl implements StutzConfig {
   locale: string;
   currencyCode: string;
   decimalPlaces: number;
+  roundingMode: RoundingMode;
   groupDelimiter: string;
   decimalDelimiter: string;
   formatter: CurrencyFormatter;
@@ -25,6 +27,7 @@ class StutzConfigImpl implements StutzConfig {
     this.locale = DEFAULT_LOCALE;
     this.currencyCode = FALLBACK_CURRENCY_CODE;
     this.decimalPlaces = DEFAULT_DECIMAL_PLACES;
+    this.roundingMode = DEFAULT_ROUNDING_MODE;
     this.groupDelimiter = DEFAULT_GROUP_DELIMITER;
     this.decimalDelimiter = DEFAULT_DECIMAL_DELIMITER;
     this.formatter = DEFAULT_FORMATTER;
@@ -51,12 +54,15 @@ const FALLBACK_CURRENCY_CODE: string = "-$-";
 const DEFAULT_DECIMAL_DELIMITER: string = ".";
 const DEFAULT_GROUP_DELIMITER: string = "'";
 const DEFAULT_DECIMAL_PLACES: number = 2;
+const DEFAULT_ROUNDING_MODE = RoundingMode.RoundTowardsZero;
 const DEFAULT_FORMATTER = (amount: BigJsLibrary.BigJS, currencyCode: string, config: StutzConfig) => {
   let _config: StutzConfigImpl = <StutzConfigImpl>config || CONFIG_REPOSITORY.configFor(DEFAULT_LOCALE, currencyCode);
 
-  let amountValue = amount.toFixed(_config.decimalPlaces || DEFAULT_DECIMAL_PLACES);
-  var groupedAmountValue = addDigitGrouping(amountValue, _config.groupDelimiter);
-  var formattedAmount = replaceDecimalDelimiter(groupedAmountValue, _config.decimalDelimiter);
+  let decimalPlaces = _config.decimalPlaces || DEFAULT_DECIMAL_PLACES;
+  let roundingMode = _config.roundingMode || DEFAULT_ROUNDING_MODE;
+  let amountValue = amount.round(decimalPlaces, roundingMode).toFixed(decimalPlaces);
+  let groupedAmountValue = addDigitGrouping(amountValue, _config.groupDelimiter);
+  let formattedAmount = replaceDecimalDelimiter(groupedAmountValue, _config.decimalDelimiter);
 
   return `${currencyCode} ${formattedAmount}`;
 };
@@ -172,6 +178,11 @@ export class ConfigBuilder {
 
   useDecimalPlaces(decimalPlaces: number): ConfigBuilder {
     this.config.decimalPlaces = decimalPlaces;
+    return this;
+  }
+
+  useRoundHalfUp(roundHalfUp: boolean): ConfigBuilder {
+    this.config.roundingMode = roundHalfUp ? RoundingMode.RoundTowardsNearestAwayFromZero : RoundingMode.RoundTowardsZero;
     return this;
   }
 

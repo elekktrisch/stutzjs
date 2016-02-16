@@ -59,6 +59,12 @@
                 var s = money.of("CHF", amount);
                 document.getElementById("default_config_result").innerHTML = s.formatMoney();
 
+                money.config().reset();
+                money.config().useRoundHalfUp(true);
+                s = money.of("CHF", amount);
+                document.getElementById("round_half_up_result").innerHTML = s.formatMoney();
+
+                money.config().reset();
                 money.config().useGroupDelimiter(",");
                 s = money.of("CHF", amount);
                 document.getElementById("group_config_result").innerHTML = s.formatMoney();
@@ -85,6 +91,7 @@
                 document.getElementById("decimal_config_result").innerHTML = err;
                 document.getElementById("decimal_places_config_result").innerHTML = err;
                 document.getElementById("formatter_config_result").innerHTML = err;
+                document.getElementById("round_half_up_result").innerHTML = err;
             }
         }
     </script>
@@ -215,12 +222,17 @@ parsed.getCurrencyCode();</pre>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Amount:</label>
-                    <input class="form-control" onkeyup="amountForConfigsChanged(this.value)" value="123465479.66"></input>
+                    <input class="form-control" onkeyup="amountForConfigsChanged(this.value)" value="123465479.665"></input>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Results:<br>with Default Config</label>
                     <pre class="code">money.config().reset();</pre>
                     <p id="default_config_result" class="calc-result">CHF 123'465'479.66</p>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label>Round half up:</label>
+                    <pre class="code">money.config().useRoundHalfUp(true);</pre>
+                    <p id="round_half_up_result" class="calc-result">CHF 123'465'479.67</p>
                 </div>
                 <div class="form-group col-xs-12">
                     <label>Custom thousands separator:</label>

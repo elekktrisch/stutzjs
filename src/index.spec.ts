@@ -72,8 +72,8 @@ describe('Stutz', () => {
     let yFormattedMoney = yStutz.formatMoney();
 
     // assert
-    expect(zFormattedMoney).toEqual("ZZZ 123.45679");
-    expect(yFormattedMoney).toEqual("YYY 123.46");
+    expect(zFormattedMoney).toEqual("ZZZ 123.45678");
+    expect(yFormattedMoney).toEqual("YYY 123.45");
   });
 
 
@@ -123,7 +123,7 @@ describe('Stutz', () => {
     let formattedMoney = stutz.formatMoney();
 
     // assert
-    expect(formattedMoney).toEqual("CHF 12'345,68");
+    expect(formattedMoney).toEqual("CHF 12'345,67");
   });
 
 
@@ -190,6 +190,16 @@ describe('Stutz', () => {
     // assert
     expect(eur.formatMoney()).toEqual("EUR 123-456=79");
     expect(chf.formatMoney()).toEqual("CHF 123_456.79");
+  });
+
+
+  it('should allow for round-half-up', () => {
+    // arrange
+    Money.config().useRoundHalfUp(true);
+    let chf = Money.of("CHF", "123456.795");
+
+    // assert
+    expect(chf.formatMoney()).toEqual("CHF 123'456.80");
   });
 
 });
