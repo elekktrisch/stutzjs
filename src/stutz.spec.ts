@@ -1,6 +1,6 @@
 import * as Big from "big.js";
-import Money from "./index";
-import {Stutz} from "./index";
+import Money from "./stutz";
+import {Stutz} from "./stutz";
 
 describe('Stutz', () => {
 
@@ -267,6 +267,17 @@ describe('Stutz', () => {
 
     // assert
     expect(chf.formatMoney()).toEqual("CHF 123'456.80");
+  });
+
+
+  it('should implement sum', () => {
+    // arrange
+    Money.config().useRoundHalfUp(true);
+    let sums = Money.sum([Money.of("CHF", "5.25"), Money.of("CHF", "8.15"), Money.of("EUR", "55.15"), Money.of("EUR", "78.15")]);
+
+    // assert
+    expect(sums[0].formatMoney()).toEqual("CHF 13.40");
+    expect(sums[1].formatMoney()).toEqual("EUR 133.30");
   });
 
 });

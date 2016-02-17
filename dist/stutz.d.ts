@@ -1,3 +1,4 @@
+import BigJS = BigJsLibrary.BigJS;
 export interface CurrencyFormatter {
     (amount: BigJsLibrary.BigJS, currencyCode: string, config?: StutzConfig): string;
 }
@@ -23,7 +24,8 @@ export declare class ConfigBuilder {
     useNegativeSign(negativeSign: string): ConfigBuilder;
 }
 export default class StutzFactory {
-    static of(currencyCode: string, value: string): Stutz;
+    static of(currencyCode: string, value: string | BigJS): Stutz;
     static config(locale?: string, currencyCode?: string): ConfigBuilder;
     static parse(formattedMoney: string, config?: StutzConfig): Stutz;
+    static sum(amounts: Array<Stutz>): Array<Stutz>;
 }

@@ -1,6 +1,7 @@
 import * as Big from "big.js";
 import "core-js/modules/es6.object.assign";
 import RoundingMode = BigJsLibrary.RoundingMode;
+import BigJS = BigJsLibrary.BigJS;
 
 export interface CurrencyFormatter {
   (amount: BigJsLibrary.BigJS, currencyCode: string, config?: StutzConfig): string;
@@ -127,9 +128,13 @@ class StutzImpl implements Stutz {
   private amount: BigJsLibrary.BigJS;
   private currencyCode: string;
 
-  constructor(currencyCode: string, value: string) {
+  constructor(currencyCode: string, value: string|BigJS) {
     this.currencyCode = currencyCode;
-    this.amount = new Big(value);
+    if((<any>value).abs) {
+      this.amount = <BigJS>value;
+    } else {
+      this.amount = new Big(<string>value);
+    }
   }
 
   getAmount(): BigJsLibrary.BigJS {
@@ -203,7 +208,7 @@ export class ConfigBuilder {
 
 export default class StutzFactory {
 
-  static of(currencyCode: string, value: string): Stutz {
+  static of(currencyCode: string, value: string|BigJS): Stutz {
     return new StutzImpl(currencyCode, value);
   }
 
@@ -223,6 +228,25 @@ export default class StutzFactory {
     let currencyCode: string = moneyWithoutBrackets.replace(new RegExp("[\\d,'.\\s" + _config.decimalDelimiter + _config.groupDelimiter + _config.negativeSign + "]", "g"), '');
 
     return new StutzImpl(currencyCode, amountValue);
+  }
+
+  static sum(amounts: Array<Stutz>): Array<Stutz> {
+    let sums: {[key:string]:BigJS} = {};
+
+    amounts.forEach((amount) => {
+      if(!sums[amount.getCurrencyCode()]) {
+        sums[amount.getCurrencyCode()] = amount.getAmount();
+      } else {
+        sums[amount.getCurrencyCode()] = sums[amount.getCurrencyCode()].plus(amount.getAmount());
+      }
+    });
+
+    let result: Array<Stutz> = [];
+    for (let key in sums) {
+      result.push(StutzFactory.of(key, sums[key]));
+    }
+
+    return result;
   }
 
 }

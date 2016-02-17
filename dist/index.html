@@ -31,76 +31,6 @@
     <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
     <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <script src="stutz.standalone.js"></script>
-    <script>
-        function formattedInputChanged(textValue) {
-            money.config().reset();
-            var s = money.parse(textValue);
-            document.getElementById("parsed_amount_result").innerHTML = s.getAmount();
-            document.getElementById("parsed_currency_result").innerHTML = s.getCurrencyCode();
-        }
-        function currencyInputChanged(currencyCode) {
-            money.config().reset();
-            var s = money.of(currencyCode, document.getElementById("amount_input").value);
-            document.getElementById("amount_result").innerHTML = s.formatMoney();
-        }
-        function amountInputChanged(amount) {
-            money.config().reset();
-            try {
-                var s = money.of(document.getElementById("amount_currency").value, amount);
-                document.getElementById("amount_result").innerHTML = s.formatMoney();
-            } catch (err) {
-                document.getElementById("amount_result").innerHTML = err;
-            }
-        }
-        function amountForConfigsChanged(amount) {
-            try {
-                money.config().reset();
-                var s = money.of("CHF", amount);
-                document.getElementById("default_config_result").innerHTML = s.formatMoney();
-
-                money.config().reset();
-                money.config().useRoundHalfUp(true);
-                s = money.of("CHF", amount);
-                document.getElementById("round_half_up_result").innerHTML = s.formatMoney();
-
-                money.config().reset();
-                money.config().useGroupDelimiter(",");
-                s = money.of("CHF", amount);
-                document.getElementById("group_config_result").innerHTML = s.formatMoney();
-
-                money.config().reset();
-                money.config().useDecimalDelimiter(",");
-                s = money.of("CHF", amount);
-                document.getElementById("decimal_config_result").innerHTML = s.formatMoney();
-
-                money.config().reset();
-                money.config().useDecimalPlaces(5);
-                s = money.of("CHF", amount);
-                document.getElementById("decimal_places_config_result").innerHTML = s.formatMoney();
-
-                money.config().reset();
-                money.config().useNegativeSign("()");
-                s = money.of("CHF", amount);
-                document.getElementById("negative_sign_result").innerHTML = s.formatMoney();
-
-                money.config().reset();
-                money.config().useFormatter(function (amount, currency) {
-                    return amount + " " + currency;
-                });
-                s = money.of("CHF", amount);
-                document.getElementById("formatter_config_result").innerHTML = s.formatMoney();
-            } catch (err) {
-                document.getElementById("default_config_result").innerHTML = err;
-                document.getElementById("group_config_result").innerHTML = err;
-                document.getElementById("decimal_config_result").innerHTML = err;
-                document.getElementById("decimal_places_config_result").innerHTML = err;
-                document.getElementById("formatter_config_result").innerHTML = err;
-                document.getElementById("round_half_up_result").innerHTML = err;
-                document.getElementById("negative_sign_result").innerHTML = err;
-            }
-        }
-    </script>
 
 </head>
 
@@ -124,6 +54,9 @@
             <ul class="nav navbar-nav navbar-right">
                 <li>
                     <a class="page-scroll" href="#features">Features</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href="#configuration">Configuration</a>
                 </li>
                 <li>
                     <a class="page-scroll" href="#download">Download</a>
@@ -164,7 +97,7 @@
     </div>
     <div class="container">
         <div class="row">
-            <div class="col-lg-4 col-md-6 text-center">
+            <div class="col-md-4 text-center">
                 <div class="service-box">
                     <div class="col-xs-12">
                         <i class="fa fa-4x fa-money wow bounceIn text-primary"></i>
@@ -191,7 +124,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 text-center">
+            <div class="col-md-4 text-center">
                 <div class="service-box">
                     <div class="col-xs-12">
                         <i class="fa fa-4x fa-cogs wow bounceIn text-primary"></i>
@@ -200,7 +133,7 @@
                     </div>
                     <div class="form-group col-xs-12" style="margin-top:30px;">
                         <label>Formatted Value:</label>
-                        <input class="form-control" onkeyup="formattedInputChanged(this.value)" onload="formattedInputChanged(this.value)" value="CHF 123'465'479.66"></input>
+                        <input class="form-control" onkeyup="formattedInputChanged(this.value)" value="CHF 123'465'479.66"></input>
                     </div>
                     <div class="form-group col-xs-12">
                         <label>Result 1: Parsed Currency</label>
@@ -219,58 +152,121 @@ parsed.getCurrencyCode(); // "CHF"</pre>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 text-center">
+            <div class="col-md-4 text-center">
+                <div class="service-box">
+                    <div class="col-xs-12">
+                        <i class="fa fa-4x fa-calculator wow bounceIn text-primary"></i>
+                        <h3>Sum</h3>
+                        <p class="text-muted">Change the values to see how the sum is calculated.</p>
+                    </div>
+                    <div class="form-group col-xs-12" style="margin-top:30px;" id="sumValues">
+                        <label>Values:</label>
+                        <input class="form-control" onkeyup="sumValueInputChanged()" value="CHF 123'465'479.66"></input>
+                        <input class="form-control" onkeyup="sumValueInputChanged()" value="CHF 123'465'479.66"></input>
+                        <input class="form-control" onkeyup="sumValueInputChanged()" value="CHF 123'465'479.66"></input>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label>Result: Sum</label>
+                        <p id="sum_result" class="calc-result"></p>
+                    </div>
+                    <div class="col-xs-12">
+                        <label>Easy to use API:</label>
+                        <pre class="code">money.sum(values);</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="configuration">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2 class="section-heading">Configuration</h2>
+                <hr class="primary">
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
                 <div class="service-box">
                     <i class="fa fa-4x fa-file-text-o wow bounceIn text-primary" data-wow-delay=".2s"></i>
                     <h3>Highly Configurable</h3>
-                    <p class="text-muted">The library supports a wide variety of configuration options.
-                        (see <a href="https://github.com/elekktrisch/stutzjs/blob/master/README.md" target="_blank">README.md</a>)</p>
+                    <p class="text-muted">The library supports a wide variety of configuration options.</p>
                 </div>
-                <div class="form-group col-xs-12" style="margin-top:30px;">
-                    <label>Currency:</label>
-                    <p class="calc-result">CHF</p>
+                <div class="form-group col-xs-6" style="margin-top:30px;">
+                    <div class="form-group col-xs-4">
+                        <label>Currency:</label>
+                        <p class="calc-result">CHF</p>
+                    </div>
+                    <div class="form-group col-xs-8">
+                        <label>Amount:</label>
+                        <input class="form-control" id="configuration_input" onkeyup="amountForConfigsChanged(this.value)" value="-123465479.995"></input>
+                    </div>
                 </div>
-                <div class="form-group col-xs-12">
-                    <label>Amount:</label>
-                    <input class="form-control" onkeyup="amountForConfigsChanged(this.value)" value="-123465479.665"></input>
-                </div>
-                <div class="form-group col-xs-12">
-                    <label>Results:<br>with Default Config</label>
+                <div class="form-group col-xs-6" style="margin-top:30px;">
+                    <label>Result with Default Config</label>
+                    <p id="default_config_result" class="calc-result"></p>
                     <pre class="code">money.config().reset();</pre>
-                    <p id="default_config_result" class="calc-result">CHF -123'465'479.66</p>
                 </div>
-                <div class="form-group col-xs-12">
-                    <label>Round half up:</label>
-                    <pre class="code">money.config().useRoundHalfUp(true);</pre>
-                    <p id="round_half_up_result" class="calc-result">CHF -123'465'479.67</p>
-                </div>
-                <div class="form-group col-xs-12">
-                    <label>Custom thousands separator:</label>
-                    <pre class="code">money.config().useGroupDelimiter(",");</pre>
-                    <p id="group_config_result" class="calc-result">CHF -123,465,479.66</p>
-                </div>
-                <div class="form-group col-xs-12">
-                    <label>Custom decimal separator:</label>
-                    <pre class="code">money.config().useDecimalDelimiter(",");</pre>
-                    <p id="decimal_config_result" class="calc-result">CHF -123'465'479,66</p>
-                </div>
-                <div class="form-group col-xs-12">
-                    <label>Custom number of decimal places:</label>
-                    <pre class="code">money.config().useDecimalPlaces(5);</pre>
-                    <p id="decimal_places_config_result" class="calc-result">CHF -123'465'479.66500</p>
-                </div>
-                <div class="form-group col-xs-12">
-                    <label>Custom number of decimal places:</label>
-                    <pre class="code">money.config().useNegativeSign("()");</pre>
-                    <p id="negative_sign_result" class="calc-result">CHF (123'465'479.66)</p>
-                </div>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                    <tr>
+                        <th>Custom Delimiters</th>
+                        <th>Custom Decimals</th>
+                        <th>Custom Negative Sign</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <div class="form-group col-xs-12">
+                                <label>Custom thousands separator:</label>
+                                <pre class="code">money.config().useGroupDelimiter(",");</pre>
+                                <p id="group_config_result" class="calc-result"></p>
+                            </div>
+                            <div class="form-group col-xs-12">
+                                <label>Custom decimal separator:</label>
+                                <pre class="code">money.config().useDecimalDelimiter(",");</pre>
+                                <p id="decimal_config_result" class="calc-result"></p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group col-xs-12">
+                                <label>Round half up:</label>
+                                <pre class="code">money.config().useRoundHalfUp(true);</pre>
+                                <p id="round_half_up_result" class="calc-result"></p>
+                            </div>
+                            <div class="form-group col-xs-12">
+                                <label>Custom number of decimal places:</label>
+                                <pre class="code">money.config().useDecimalPlaces(5);</pre>
+                                <p id="decimal_places_config_result" class="calc-result"></p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-group col-xs-12">
+                                <label>with brackets:</label>
+                                <pre class="code">money.config().useNegativeSign("()");</pre>
+                                <p id="negative_sign_result" class="calc-result"></p>
+                            </div>
+                            <div class="form-group col-xs-12">
+                                <label>letter instead of dash:</label>
+                                <pre class="code">money.config().useNegativeSign("N");</pre>
+                                <p id="negative_sign2_result" class="calc-result"></p>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="form-group col-xs-12"></div>
                 <div class="form-group col-xs-12">
                     <label>Custom formatter:</label>
                     <pre class="code">money.config().useFormatter(
   function (amount, currency) {
     return amount + " " + currency;
   });</pre>
-                    <p id="formatter_config_result" class="calc-result">-123465479.665 CHF</p>
+                    <p id="formatter_config_result" class="calc-result"></p>
                 </div>
             </div>
         </div>
@@ -333,6 +329,114 @@ parsed.getCurrencyCode(); // "CHF"</pre>
 
 <!-- Custom Theme JavaScript -->
 <script src="js/creative.js"></script>
+
+
+<script src="stutz.standalone.js"></script>
+<script>
+    var parsed_amount_result = $("#parsed_amount_result");
+    var parsed_currency_result = $("#parsed_currency_result");
+    var amount_result = $("#amount_result");
+    var configuration_input = $("#configuration_input")[0];
+    var default_config_result = $("#default_config_result");
+    var round_half_up_result = $("#round_half_up_result");
+    var group_config_result = $("#group_config_result");
+    var decimal_config_result = $("#decimal_config_result");
+    var decimal_places_config_result = $("#decimal_places_config_result");
+    var negative_sign_result = $("#negative_sign_result");
+    var negative_sign2_result = $("#negative_sign2_result");
+    var formatter_config_result = $("#formatter_config_result");
+    var sumValues = $("#sumValues").find("input");
+    var sum_result = $("#sum_result");
+
+    function formattedInputChanged(textValue) {
+        money.config().reset();
+        var s = money.parse(textValue);
+        parsed_amount_result.text(s.getAmount());
+        parsed_currency_result.text(s.getCurrencyCode());
+    }
+    function currencyInputChanged(currencyCode) {
+        money.config().reset();
+        var s = money.of(currencyCode, document.getElementById("amount_input").value);
+        amount_result.text(s.formatMoney());
+    }
+    function amountInputChanged(amount) {
+        money.config().reset();
+        try {
+            var s = money.of(document.getElementById("amount_currency").value, amount);
+            amount_result.text(s.formatMoney());
+        } catch (err) {
+            amount_result.text(err);
+        }
+    }
+    function sumValueInputChanged() {
+        money.config().reset();
+        var moneyAmounts = [];
+        for(var i = 0; i < sumValues.length; i++) {
+            moneyAmounts.push(money.parse(sumValues[i].value));
+        }
+
+        var sums = money.sum(moneyAmounts);
+        sum_result.text("");
+        for(var idx in sums) {
+            sum_result.append("<p>" + sums[idx].formatMoney() + "</p>");
+        }
+    }
+    function amountForConfigsChanged(amount) {
+        try {
+            money.config().reset();
+            var s = money.of("CHF", amount);
+            default_config_result.text(s.formatMoney());
+
+            money.config().reset();
+            money.config().useRoundHalfUp(true);
+            s = money.of("CHF", amount);
+            round_half_up_result.text(s.formatMoney());
+
+            money.config().reset();
+            money.config().useGroupDelimiter(",");
+            s = money.of("CHF", amount);
+            group_config_result.text(s.formatMoney());
+
+            money.config().reset();
+            money.config().useDecimalDelimiter(",");
+            s = money.of("CHF", amount);
+            decimal_config_result.text(s.formatMoney());
+
+            money.config().reset();
+            money.config().useDecimalPlaces(5);
+            s = money.of("CHF", amount);
+            decimal_places_config_result.text(s.formatMoney());
+
+            money.config().reset();
+            money.config().useNegativeSign("()");
+            s = money.of("CHF", amount);
+            negative_sign_result.text(s.formatMoney());
+
+            money.config().reset();
+            money.config().useNegativeSign("N");
+            s = money.of("CHF", amount);
+            negative_sign2_result.text(s.formatMoney());
+
+            money.config().reset();
+            money.config().useFormatter(function (amount, currency) {
+                return amount + " " + currency;
+            });
+            s = money.of("CHF", amount);
+            formatter_config_result.text(s.formatMoney());
+        } catch (err) {
+            default_config_result.text(err);
+            group_config_result.text(err);
+            decimal_config_result.text(err);
+            decimal_places_config_result.text(err);
+            formatter_config_result.text(err);
+            round_half_up_result.text(err);
+            negative_sign_result.text(err);
+        }
+    }
+
+    amountForConfigsChanged(configuration_input.value);
+    sumValueInputChanged();
+</script>
 
 </body>
 

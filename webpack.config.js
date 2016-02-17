@@ -8,7 +8,7 @@ var config = {
 
     context: __dirname + '/src',
     entry: {
-        "stutz": 'src/index.global.ts'
+        "stutz": 'src/stutz.global.ts'
     },
 
     resolve: {

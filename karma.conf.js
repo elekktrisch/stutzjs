@@ -5,10 +5,10 @@ module.exports = function (config) {
     var configObject = {
         basePath: 'src',
         frameworks: ['jasmine'],
-        files: ['index.spec.ts'],
+        files: ['stutz.spec.ts'],
         reporters: ['dots'],
         preprocessors: {
-            'index.spec.ts': ['webpack', 'sourcemap']
+            'stutz.spec.ts': ['webpack', 'sourcemap']
         },
         webpack: {
             module: webpackConfig.module,
