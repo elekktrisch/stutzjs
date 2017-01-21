@@ -23,7 +23,7 @@
     "bigdecimal"
   ],
   "author": "Roman Schlegel",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/elekktrisch/stutzjs/issues"
   },
