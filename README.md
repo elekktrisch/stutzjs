@@ -19,7 +19,7 @@ const money = require("stutzjs").default; // CJS
 ```
 Or load the standalone bundle directly in a browser (exposes `window.money`):
 ```html
-<script src="https://unpkg.com/stutzjs/dist/stutz.standalone.js"></script>
+<script src="https://elekktrisch.github.io/stutzjs/stutz.standalone.js"></script>
 ```
 
 ## Format values
