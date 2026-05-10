@@ -4,7 +4,7 @@
 * Solves the accuracy problems of the accountingjs library (http://openexchangerates.github.io/accounting.js) by using a bigdecimal implementation (credits http://mikemcl.github.io/big.js) instead of floatingpoint.
 * ships as ESM, CJS, and a standalone browser bundle, with TypeScript declarations
 
-[Demo](https://rawgit.com/elekktrisch/stutzjs/master/dist/index.html)
+[Demo](https://elekktrisch.github.io/stutzjs/)
 
 ## Getting started
 Add via npm:
@@ -35,4 +35,4 @@ console.log(stutz.getAmount().toFixed(3)); // "1234654987.120"
 console.log(stutz.getCurrencyCode()); // "CHF" 
 ```
 
-see [Demo](https://rawgit.com/elekktrisch/stutzjs/master/dist/index.html) for all configuration options.
+see [Demo](https://elekktrisch.github.io/stutzjs/) for all configuration options.
