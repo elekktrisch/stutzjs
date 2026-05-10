@@ -1,15 +1,16 @@
-import BigJS = BigJsLibrary.BigJS;
-export interface CurrencyFormatter {
-    (amount: BigJsLibrary.BigJS, currencyCode: string, config?: StutzConfig): string;
+import Big from 'big.js';
+
+interface CurrencyFormatter {
+    (amount: Big, currencyCode: string, config?: StutzConfig): string;
 }
-export interface StutzConfig {
+interface StutzConfig {
 }
-export interface Stutz {
-    getAmount(): BigJsLibrary.BigJS;
+interface Stutz {
+    getAmount(): Big;
     getCurrencyCode(): string;
     formatMoney(locale?: string): string;
 }
-export declare class ConfigBuilder {
+declare class ConfigBuilder {
     private locale;
     private currencyCode;
     private config;
@@ -23,9 +24,11 @@ export declare class ConfigBuilder {
     useRoundHalfUp(roundHalfUp: boolean): ConfigBuilder;
     useNegativeSign(negativeSign: string): ConfigBuilder;
 }
-export default class StutzFactory {
-    static of(currencyCode: string, value: string | BigJS): Stutz;
+declare class StutzFactory {
+    static of(currencyCode: string, value: string | Big): Stutz;
     static config(locale?: string, currencyCode?: string): ConfigBuilder;
     static parse(formattedMoney: string, config?: StutzConfig): Stutz;
     static sum(amounts: Array<Stutz>): Array<Stutz>;
 }
+
+export { ConfigBuilder, type CurrencyFormatter, type Stutz, type StutzConfig, StutzFactory as default };

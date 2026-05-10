@@ -1,10 +1,7 @@
-import * as Big from "big.js";
-import "core-js/modules/es6.object.assign";
-import RoundingMode = BigJsLibrary.RoundingMode;
-import BigJS = BigJsLibrary.BigJS;
+import Big, { RoundingMode } from "big.js";
 
 export interface CurrencyFormatter {
-  (amount: BigJsLibrary.BigJS, currencyCode: string, config?: StutzConfig): string;
+  (amount: Big, currencyCode: string, config?: StutzConfig): string;
 }
 
 export interface StutzConfig {
@@ -58,8 +55,8 @@ const DEFAULT_DECIMAL_DELIMITER: string = ".";
 const DEFAULT_NEGATIVE_SIGN: string = "-";
 const DEFAULT_GROUP_DELIMITER: string = "'";
 const DEFAULT_DECIMAL_PLACES: number = 2;
-const DEFAULT_ROUNDING_MODE = RoundingMode.RoundTowardsZero;
-const DEFAULT_FORMATTER = (amount: BigJsLibrary.BigJS, currencyCode: string, config: StutzConfig) => {
+const DEFAULT_ROUNDING_MODE = Big.roundDown;
+const DEFAULT_FORMATTER = (amount: Big, currencyCode: string, config: StutzConfig) => {
   let _config: StutzConfigImpl = <StutzConfigImpl>config || CONFIG_REPOSITORY.configFor(DEFAULT_LOCALE, currencyCode);
 
   let decimalPlaces = _config.decimalPlaces || DEFAULT_DECIMAL_PLACES;
@@ -118,26 +115,26 @@ class ConfigRepository {
 const CONFIG_REPOSITORY: ConfigRepository = new ConfigRepository();
 
 export interface Stutz {
-  getAmount(): BigJsLibrary.BigJS;
+  getAmount(): Big;
   getCurrencyCode(): string;
   formatMoney(locale?: string): string;
 }
 
 class StutzImpl implements Stutz {
 
-  private amount: BigJsLibrary.BigJS;
+  private amount: Big;
   private currencyCode: string;
 
-  constructor(currencyCode: string, value: string|BigJS) {
+  constructor(currencyCode: string, value: string | Big) {
     this.currencyCode = currencyCode;
     if((<any>value).abs) {
-      this.amount = <BigJS>value;
+      this.amount = <Big>value;
     } else {
       this.amount = new Big(<string>value);
     }
   }
 
-  getAmount(): BigJsLibrary.BigJS {
+  getAmount(): Big {
     return this.amount;
   }
 
@@ -195,7 +192,7 @@ export class ConfigBuilder {
   }
 
   useRoundHalfUp(roundHalfUp: boolean): ConfigBuilder {
-    this.config.roundingMode = roundHalfUp ? RoundingMode.RoundTowardsNearestAwayFromZero : RoundingMode.RoundTowardsZero;
+    this.config.roundingMode = roundHalfUp ? Big.roundHalfUp : Big.roundDown;
     return this;
   }
 
@@ -208,7 +205,7 @@ export class ConfigBuilder {
 
 export default class StutzFactory {
 
-  static of(currencyCode: string, value: string|BigJS): Stutz {
+  static of(currencyCode: string, value: string | Big): Stutz {
     return new StutzImpl(currencyCode, value);
   }
 
@@ -231,7 +228,7 @@ export default class StutzFactory {
   }
 
   static sum(amounts: Array<Stutz>): Array<Stutz> {
-    let sums: {[key:string]:BigJS} = {};
+    let sums: {[key:string]:Big} = {};
 
     amounts.forEach((amount) => {
       if(!sums[amount.getCurrencyCode()]) {
