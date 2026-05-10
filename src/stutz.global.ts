@@ -1,3 +1,3 @@
 import StutzFactory from "./stutz";
 
-window["money"] = StutzFactory;
+(globalThis as any).money = StutzFactory;

@@ -1,6 +1,7 @@
-import * as Big from "big.js";
+import { describe, it, expect, beforeEach } from "vitest";
+import type Big from "big.js";
 import Money from "./stutz";
-import {Stutz} from "./stutz";
+import { Stutz } from "./stutz";
 
 describe('Stutz', () => {
 
@@ -13,7 +14,7 @@ describe('Stutz', () => {
     let stutz: Stutz = Money.of("CHF", "100.2000");
 
     // act
-    let amount: BigJsLibrary.BigJS = stutz.getAmount();
+    let amount: Big = stutz.getAmount();
 
     // assert
     expect(amount.toJSON()).toEqual("100.2");
@@ -47,7 +48,7 @@ describe('Stutz', () => {
 
   it('should allow for custom formatter', () => {
     // arrange
-    Money.config().useFormatter((amount: BigJsLibrary.BigJS, currencyCode: string) => {
+    Money.config().useFormatter((amount: Big, currencyCode: string) => {
       return amount.toFixed(3) + " extremely customized format " + currencyCode;
     });
     let stutz: Stutz = Money.of("CHF", "123.456789");

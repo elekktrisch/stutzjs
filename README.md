@@ -1,19 +1,25 @@
-[![Build Status](https://travis-ci.org/elekktrisch/stutzjs.svg?branch=master)](https://travis-ci.org/elekktrisch/stutzjs)
+[![CI](https://github.com/elekktrisch/stutzjs/actions/workflows/ci.yml/badge.svg)](https://github.com/elekktrisch/stutzjs/actions/workflows/ci.yml)
 
 # StutzJS
 * Solves the accuracy problems of the accountingjs library (http://openexchangerates.github.io/accounting.js) by using a bigdecimal implementation (credits http://mikemcl.github.io/big.js) instead of floatingpoint.
-* supports typescript by providing an ambient typings file
+* ships as ESM, CJS, and a standalone browser bundle, with TypeScript declarations
 
-[Demo](https://rawgit.com/elekktrisch/stutzjs/master/dist/index.html)
+[Demo](https://elekktrisch.github.io/stutzjs/)
 
 ## Getting started
-Import the stutz script by adding a script tag in the html header:
-```html
-<script src="./stutz.standalone.js"></script>
-```       
-Or by adding an npm dependency
+Add via npm:
 ```
-npm install stutzjs --save
+npm install stutzjs
+```
+Then import:
+```js
+import money from "stutzjs";          // ESM
+// or
+const money = require("stutzjs").default; // CJS
+```
+Or load the standalone bundle directly in a browser (exposes `window.money`):
+```html
+<script src="https://unpkg.com/stutzjs/dist/stutz.standalone.js"></script>
 ```
 
 ## Format values
@@ -29,4 +35,4 @@ console.log(stutz.getAmount().toFixed(3)); // "1234654987.120"
 console.log(stutz.getCurrencyCode()); // "CHF" 
 ```
 
-see [Demo](https://rawgit.com/elekktrisch/stutzjs/master/dist/index.html) for all configuration options.
+see [Demo](https://elekktrisch.github.io/stutzjs/) for all configuration options.
