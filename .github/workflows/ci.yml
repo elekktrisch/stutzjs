@@ -58,11 +58,17 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      - name: Assemble site
+        run: |
+          mkdir _site
+          cp -r demo/. _site/
+          cp dist/stutz.standalone.js _site/
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./_site
 
       - id: deployment
         uses: actions/deploy-pages@v5

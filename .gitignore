@@ -5,9 +5,5 @@ npm-debug.log
 *.log
 .DS_Store
 coverage
-dist/stutz.cjs
-dist/stutz.mjs
-dist/stutz.d.ts
-dist/stutz.d.mts
-dist/stutz.standalone.js
-dist/*.map
+dist
+_site
